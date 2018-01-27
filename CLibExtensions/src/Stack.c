@@ -1,5 +1,5 @@
-#include "../include/Stack.h"
-#include "../include/Vector.h"
+#include "CLib/Stack.h"
+#include "CLib/Vector.h"
 #include <stdlib.h>
 
 #define DEFAULT_STACK_INITIAL_CAPACITY 100

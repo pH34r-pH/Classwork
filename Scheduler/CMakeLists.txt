@@ -9,3 +9,5 @@ set(CMAKE_C_STANDARD 11)
 
 # Create the executable project.
 add_executable(Scheduling main.c)
+
+# Uncomment the following line if

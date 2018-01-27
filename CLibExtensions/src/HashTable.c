@@ -1,6 +1,6 @@
-#include "../include/LinkedList.h"
-#include "../include/HashTable.h"
-#include "../include/Vector.h"
+#include "CLib/LinkedList.h"
+#include "CLib/HashTable.h"
+#include "CLib/Vector.h"
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>

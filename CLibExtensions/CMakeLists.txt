@@ -13,13 +13,16 @@ set(src_files
 
 # Create a list of header files.
 set(hdr_files
-        include/CLibraryExtensions.h
-        include/CLibraryHeaders.h
-        include/HashTable.h
-        include/LinkedList.h
-        include/Stack.h
-        include/Vector.h)
+        include/CLib/CLibraryExtensions.h
+        include/CLib/CLibraryHeaders.h
+        include/CLib/HashTable.h
+        include/CLib/LinkedList.h
+        include/CLib/Stack.h
+        include/CLib/Vector.h)
 
 # Include source and header files into a library. Force static linking since that will
 # keep things simple.
 add_library(CLibExtensions STATIC ${src_files} ${hdr_files})
+
+# Add the include/CLib directory as a public include path associated with the CLibExtensions target.
+target_include_directories(CLibExtensions PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
