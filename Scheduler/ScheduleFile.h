@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <CLib/Vector.h>
 #include <stdbool.h>
 
 /**
@@ -15,10 +16,12 @@ typedef enum tagSchedulerType
      * First In First Out Scheduler
      */
     FIFO = 0,
+
     /**
      * Preemptive Shortest Job First Scheduler.
      */
     ShortestJob = 1,
+
     /**
      * Round-Robin Scheduler
      */
@@ -34,10 +37,12 @@ typedef struct tagInputProcess
      * The name of the process, stored as a standard C String.
      */
     char processName[128];
+
     /**
      * The total length of time that the process needs to run.
      */
     unsigned int burstLength;
+
     /**
      * The time at which this process arrived.
      */
@@ -53,25 +58,22 @@ typedef struct tagScheduleData
      * The type of scheduler specified in the input file.
      */
     SchedulerType schedulerType;
+
     /**
      * The time quantum value for the Round-Robin algorithm. Set to 0 if the
      * algorithm is not Round-Robin.
      */
     unsigned int timeQuantum;
+
     /**
      * The number of time units that the scheduler should run for.
      */
     unsigned int runLength;
 
     /**
-     * The number of processes that are included in the file.
+     * The list of InputProcess objects that were retrieved from the file.
      */
-    unsigned int numProcesses;
-
-    /**
-     * The array of input processes that were read from the file.
-     */
-    InputProcess* processes;
+    Vector* processes;
 } ScheduleData;
 
 /**

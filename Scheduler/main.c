@@ -27,8 +27,8 @@ int main()
             break;
     }
 
-    // Destroy the dynamically allocated list of processes in the ScheduleData.
-    free(inputData.processes);
+    // Destroy the vector of processes.
+    VectorDestroy(&inputData.processes);
 
     return 0;
 }

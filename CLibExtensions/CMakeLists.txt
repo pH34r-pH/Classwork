@@ -26,3 +26,6 @@ add_library(CLibExtensions STATIC ${src_files} ${hdr_files})
 
 # Add the include/CLib directory as a public include path associated with the CLibExtensions target.
 target_include_directories(CLibExtensions PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+# Add any necessary compile definitions while building.
+target_compile_definitions(CLibExtensions PRIVATE -DCLIBRARY_EXPORT_FUNCTIONS)
