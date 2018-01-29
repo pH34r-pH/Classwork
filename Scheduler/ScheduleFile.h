@@ -13,9 +13,9 @@
 typedef enum tagSchedulerType
 {
     /**
-     * First In First Out Scheduler
+     * First-Come First-Served Scheduler
      */
-    FIFO = 0,
+    FCFS = 0,
 
     /**
      * Preemptive Shortest Job First Scheduler.

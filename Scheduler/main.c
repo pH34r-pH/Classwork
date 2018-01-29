@@ -10,7 +10,7 @@ void PrintScheduleData(ScheduleData* inputData)
 
     switch (inputData->schedulerType)
     {
-        case FIFO:
+        case FCFS:
             printf("Scheduler Type: First-Come First-Served\n");
             break;
         case ShortestJob:
@@ -49,14 +49,14 @@ int main()
 
     switch (inputData.schedulerType)
     {
-        case FIFO:
-            // Call FIFO code.
+        case FCFS:
+            // Call First-Come First-Served code.
             break;
         case ShortestJob:
-            // Call Shortest Job code.
+            // Call Shortest Job First code.
             break;
         case RoundRobin:
-            // Call Round Robin code.
+            // Call Round-Robin code.
             break;
     }
 

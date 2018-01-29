@@ -152,7 +152,7 @@ bool ReadScheduleFile(ScheduleData* fileData)
 
             if (strcmp(currentToken->strTokenValue, "fcfs") == 0)
             {
-                fileData->schedulerType = FIFO;
+                fileData->schedulerType = FCFS;
             }
             else if (strcmp(currentToken->strTokenValue, "sjf") == 0)
             {
