@@ -43,7 +43,7 @@ int main()
 
     // Set this to 0 to disable this code. This is just nice to have to verify the ScheduleData reader is working
     // properly.
-#if 1
+#ifdef PRINT_PROCESSES_DATA
     PrintScheduleData(&inputData);
 #endif
 
