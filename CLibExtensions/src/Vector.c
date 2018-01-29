@@ -7,20 +7,21 @@
 typedef struct tagVector
 {
 	// The size of the data type stored in this vector.
-	int dataTypeSize;
+	unsigned int dataTypeSize;
 	// The current capacity of the vector.
-	int currentCapacity;
+	unsigned int currentCapacity;
 	// The maximum capacity of the vector. If a maximum capacity is not used, this is -1.
-	int maxCapacity;
+	unsigned int maxCapacity;
 	// The data that this vector stores.
 	void* data;
 	// The number of items stored in the vector.
-	int numItems;
+	unsigned int numItems;
 	// An equals implementation to compare two objects.
 	EqualsFunction* equalsFunction;
 } Vector;
 
-bool VectorCreate(int dataTypeSize, int initialCapacity, int maxCapacity, EqualsFunction* equalImpl, Vector** vect)
+bool VectorCreate(unsigned int dataTypeSize, unsigned int initialCapacity, unsigned int maxCapacity,
+				  EqualsFunction* equalImpl, Vector** vect)
 {
 	if (dataTypeSize <= 0)
 		return false;
@@ -237,7 +238,7 @@ bool VectorCopy(Vector* vectOther, Vector* vect)
 
 	// The first thing to do is ensure vectOther has enough space to take in the contents of this
 	// vector.
-	int resultSize = vectOther->numItems + vect->numItems;
+	unsigned int resultSize = vectOther->numItems + vect->numItems;
 	if (vectOther->currentCapacity < resultSize)
 	{
 		// vectOther needs to have its space expanded. Is it allowed to do this?

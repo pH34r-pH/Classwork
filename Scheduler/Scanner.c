@@ -127,6 +127,38 @@ void ScannerMoveForward(Scanner* scan)
     scan->currentPos++;
 }
 
+void ScannerMoveToNextLine(Scanner* scan)
+{
+    while (!ScannerIsAtEnd(scan) && scan->fileContents[scan->currentPos] != '\n')
+    {
+        ScannerMoveForward(scan);
+    }
+
+    // Move the scanner forward once more to consume the new line character and be on the next line.
+    ScannerMoveForward(scan);
+}
+
+CharType ScannerGetCharType(Scanner* scan)
+{
+    if (ScannerIsAtEnd(scan))
+        return CharType::EndFile;
+
+    char currentChar = scan->fileContents[scan->currentPos];
+    if (isalpha(currentChar))
+        return CharType::Alpha;
+    else if (isdigit(currentChar))
+        return CharType::Digit;
+    else if (isspace(currentChar))
+        return CharType::Whitespace;
+
+    return CharType::Symbol;
+}
+
+char ScannerGetChar(Scanner* scan)
+{
+    return scan->fileContents[scan->currentPos];
+}
+
 bool ScannerIsAtEnd(Scanner* scan)
 {
     return scan->currentPos == scan->fileLength;

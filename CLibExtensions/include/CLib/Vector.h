@@ -12,7 +12,7 @@
 typedef struct tagVector Vector;
 
 // Creates a new vector object, allocating an initial size.
-CLIBRARY_API bool VectorCreate(int dataTypeSize, int initialCapacity, int maxCapacity,
+CLIBRARY_API bool VectorCreate(unsigned int dataTypeSize, unsigned int initialCapacity, unsigned int maxCapacity,
 	EqualsFunction* equalImpl, Vector** vect);
 
 // Destroys a vector object.
