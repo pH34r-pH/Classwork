@@ -55,9 +55,10 @@ void LexerDestroy(Lexer** lexer)
     for (int i = 0; i < VectorCount(tokens); i++)
     {
         LexerToken* token = VectorGet(i, tokens);
-        if (token->tokenType == TokenType::String)
+        if (token->tokenType == String && token->strTokenValue != NULL)
         {
             free(token->strTokenValue);
+            token->strTokenValue = NULL;
         }
     }
 
@@ -82,11 +83,11 @@ bool LexerParseFile(const char* filename, Lexer* lexer)
     {
         switch (ScannerGetCharType(scan))
         {
-            case CharType::Alpha:
+            case Alpha:
             {
                 // This is a word. Read the rest of the word and store it as a string token.
                 LexerToken token;
-                token.tokenType = TokenType::String;
+                token.tokenType = String;
 
                 // Read a string from input.
                 char* parsedString;
@@ -103,16 +104,16 @@ bool LexerParseFile(const char* filename, Lexer* lexer)
 
                 break;
             }
-            case CharType::Digit:
+            case Digit:
             {
                 // This is a number. Read the number and store it as a numerical token.
                 LexerToken token;
-                token.tokenType = TokenType::Number;
+                token.tokenType = Number;
                 token.numTokenValue = (unsigned int)ScannerReadNextInteger(scan);
                 VectorAdd(&token, lexer->tokens);
                 break;
             }
-            case CharType::Symbol:
+            case Symbol:
             {
                 // Is the symbol the comment (#) character?
                 if (ScannerGetChar(scan) == '#')
@@ -121,13 +122,13 @@ bool LexerParseFile(const char* filename, Lexer* lexer)
                     ScannerMoveToNextLine(scan);
                 }
             }
-            case CharType::Whitespace:
+            case Whitespace:
             {
                 // Skip the whitespace.
                 ScannerMoveForward(scan);
                 break;
             }
-            case CharType::EndFile:
+            case EndFile:
                 break;
         }
     }
@@ -138,7 +139,7 @@ bool LexerParseFile(const char* filename, Lexer* lexer)
 Vector* LexerGetTokens(Lexer* lexer)
 {
     Vector* copyVector;
-    if (!VectorCreate(sizeof(LexerToken), VectorCount(lexer->tokens), -1, NULL, &copyVector))
+    if (!VectorCreate(sizeof(LexerToken), VectorCount(lexer->tokens), 0, NULL, &copyVector))
     {
         return NULL;
     }

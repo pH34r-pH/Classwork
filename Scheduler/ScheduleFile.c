@@ -18,11 +18,11 @@ bool ParseProcess(Vector* tokens, unsigned int* currentTokenIndex, InputProcess*
     for (int i = 0; i < 3; i++)
     {
         currentToken = VectorGet(++(*currentTokenIndex), tokens);
-        if (strcmp("name", currentToken->strTokenValue))
+        if (strcmp("name", currentToken->strTokenValue) == 0)
         {
             // The next token should be a string value representing the name of the process.
             currentToken = VectorGet(++(*currentTokenIndex), tokens);
-            if (currentToken->tokenType != TokenType::String)
+            if (currentToken->tokenType != String)
             {
                 fprintf(stderr, "Invalid processes file specified. Found an unexpected digit character.\n");
                 return false;
@@ -30,11 +30,11 @@ bool ParseProcess(Vector* tokens, unsigned int* currentTokenIndex, InputProcess*
 
             strcpy(process->processName, currentToken->strTokenValue);
         }
-        else if (strcmp("arrival", currentToken->strTokenValue))
+        else if (strcmp("arrival", currentToken->strTokenValue) == 0)
         {
             // The next token should be an integer value representing the arrival time of the process.
             currentToken = VectorGet(++(*currentTokenIndex), tokens);
-            if (currentToken->tokenType != TokenType::Number)
+            if (currentToken->tokenType != Number)
             {
                 fprintf(stderr, "Invalid processes file specified. Found an unexpected alphabetic character.\n");
                 return false;
@@ -42,11 +42,11 @@ bool ParseProcess(Vector* tokens, unsigned int* currentTokenIndex, InputProcess*
 
             process->arrivalTime = currentToken->numTokenValue;
         }
-        else if (strcmp("burst", currentToken->strTokenValue))
+        else if (strcmp("burst", currentToken->strTokenValue) == 0)
         {
             // The next token should be an integer value representing the burst length of the process.
             currentToken = VectorGet(++(*currentTokenIndex), tokens);
-            if (currentToken->tokenType != TokenType::Number)
+            if (currentToken->tokenType != Number)
             {
                 fprintf(stderr, "Invalid processes file specified. Found an unexpected alphabetic character.\n");
                 return false;
@@ -96,7 +96,7 @@ bool ReadScheduleFile(ScheduleData* fileData)
         LexerToken* currentToken = VectorGet(currentTokenIndex, tokens);
 
         // At this point, the token should always be a string. At this level, we should never find a number token.
-        if (currentToken->tokenType != TokenType::String)
+        if (currentToken->tokenType != String)
         {
             fprintf(stderr, "Invalid processes file specified. Found an unexpected digit.\n");
             readSuccessful = false;
@@ -109,7 +109,7 @@ bool ReadScheduleFile(ScheduleData* fileData)
             // The next value in the file should be a number representing the number of processes that
             // are in the file.
             currentToken = VectorGet(++currentTokenIndex, tokens);
-            if (currentToken->tokenType != TokenType::Number)
+            if (currentToken->tokenType != Number)
             {
                 fprintf(stderr, "Invalid processes file specified. Found an unexpected alphabetic character.\n");
                 readSuccessful = false;
@@ -129,7 +129,7 @@ bool ReadScheduleFile(ScheduleData* fileData)
             // The next value in the file should be a number representing the number of processes that
             // are in the file.
             currentToken = VectorGet(++currentTokenIndex, tokens);
-            if (currentToken->tokenType != TokenType::Number)
+            if (currentToken->tokenType != Number)
             {
                 fprintf(stderr, "Invalid processes file specified. Found an unexpected alphabetic character.\n");
                 readSuccessful = false;
@@ -143,7 +143,7 @@ bool ReadScheduleFile(ScheduleData* fileData)
         {
             // The next value in the file should be a string representing the scheduler type we want to use.
             currentToken = VectorGet(++currentTokenIndex, tokens);
-            if (currentToken->tokenType != TokenType::String)
+            if (currentToken->tokenType != String)
             {
                 fprintf(stderr, "Invalid processes file specified. Found an unexpected digit.\n");
                 readSuccessful = false;
@@ -152,15 +152,15 @@ bool ReadScheduleFile(ScheduleData* fileData)
 
             if (strcmp(currentToken->strTokenValue, "fcfs") == 0)
             {
-                fileData->schedulerType = SchedulerType::FIFO;
+                fileData->schedulerType = FIFO;
             }
             else if (strcmp(currentToken->strTokenValue, "sjf") == 0)
             {
-                fileData->schedulerType = SchedulerType::ShortestJob;
+                fileData->schedulerType = ShortestJob;
             }
             else if (strcmp(currentToken->strTokenValue, "rr") == 0)
             {
-                fileData->schedulerType = SchedulerType::RoundRobin;
+                fileData->schedulerType = RoundRobin;
             }
             else
             {
@@ -169,11 +169,11 @@ bool ReadScheduleFile(ScheduleData* fileData)
                 break;
             }
         }
-        else if (strcmp(currentToken->strTokenValue, "quantum"))
+        else if (strcmp(currentToken->strTokenValue, "quantum") == 0)
         {
             // The next value in the file should be a number representing the time quantum value.
             currentToken = VectorGet(++currentTokenIndex, tokens);
-            if (currentToken->tokenType != TokenType::Number)
+            if (currentToken->tokenType != Number)
             {
                 fprintf(stderr, "Invalid processes file specified. Found an unexpected alphabetic character.\n");
                 readSuccessful = false;
@@ -182,7 +182,7 @@ bool ReadScheduleFile(ScheduleData* fileData)
 
             fileData->timeQuantum = currentToken->numTokenValue;
         }
-        else if (strcmp(currentToken->strTokenValue, "process"))
+        else if (strcmp(currentToken->strTokenValue, "process") == 0)
         {
             // The next 6 tokens should all be part of a process.
             InputProcess process;
@@ -191,24 +191,35 @@ bool ReadScheduleFile(ScheduleData* fileData)
             if (!readSuccessful)
                 break;
         }
-        else if (strcmp(currentToken->strTokenValue, "end"))
+        else if (strcmp(currentToken->strTokenValue, "end") == 0)
         {
             // No work needs to be done. We've reached the end of input.
             break;
+        }
+        else
+        {
+            // Unknown value specified.
+            fprintf(stderr, "Invalid processes file specified. Found an unexpected string value where a process "
+                    "configuration value was expected.\n");
+            readSuccessful = false;
         }
 
         currentTokenIndex++;
     }
 
+    // The call to LexerDestroy will handle this.
+#if 0
     // Destroy each dynamically allocated string token.
     for (int i = 0; i < VectorCount(tokens); i++)
     {
         LexerToken* token = VectorGet(i, tokens);
-        if (token->tokenType == TokenType::String)
+        if (token->tokenType == String && token->strTokenValue != NULL)
         {
             free(token->strTokenValue);
+            token->strTokenValue = NULL;
         }
     }
+#endif
 
     // Destroy the lexer.
     LexerDestroy(&lexer);

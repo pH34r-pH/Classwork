@@ -47,7 +47,7 @@ CLIBRARY_API int VectorIndexOf(const void* data, Vector* vect);
 CLIBRARY_API bool VectorContains(const void* data, Vector* vect);
 
 // Gets the number of items that are currently stored in a vector.
-CLIBRARY_API int VectorCount(Vector* vect);
+CLIBRARY_API unsigned int VectorCount(Vector* vect);
 
 // Returns true if the vector is empty, otherwise returns false.
 CLIBRARY_API bool VectorIsEmpty(Vector* vect);

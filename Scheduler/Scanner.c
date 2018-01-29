@@ -92,7 +92,7 @@ void ScannerReadNextString(char** strStart, unsigned int* strLength, Scanner* sc
     *strStart = scan->fileContents + scan->currentPos;
 
     // Move the scanner forward until a whitespace character is found, or the end of the file is reached.
-    while (!ScannerIsAtEnd(scan) && !isblank(scan->fileContents[scan->currentPos]))
+    while (!ScannerIsAtEnd(scan) && !isspace(scan->fileContents[scan->currentPos]))
     {
         length++;
         ScannerMoveForward(scan);
@@ -141,17 +141,17 @@ void ScannerMoveToNextLine(Scanner* scan)
 CharType ScannerGetCharType(Scanner* scan)
 {
     if (ScannerIsAtEnd(scan))
-        return CharType::EndFile;
+        return EndFile;
 
     char currentChar = scan->fileContents[scan->currentPos];
     if (isalpha(currentChar))
-        return CharType::Alpha;
+        return Alpha;
     else if (isdigit(currentChar))
-        return CharType::Digit;
+        return Digit;
     else if (isspace(currentChar))
-        return CharType::Whitespace;
+        return Whitespace;
 
-    return CharType::Symbol;
+    return Symbol;
 }
 
 char ScannerGetChar(Scanner* scan)

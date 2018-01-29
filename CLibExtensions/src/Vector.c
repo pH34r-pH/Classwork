@@ -204,7 +204,7 @@ bool VectorContains(const void* data, Vector* vect)
 	return VectorIndexOf(data, vect) != -1;
 }
 
-int VectorCount(Vector* vect)
+unsigned int VectorCount(Vector* vect)
 {
 	return vect->numItems;
 }
