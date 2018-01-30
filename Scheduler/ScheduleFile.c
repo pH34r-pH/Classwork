@@ -15,6 +15,9 @@ bool ParseProcess(Vector* tokens, unsigned int* currentTokenIndex, InputProcess*
 {
     LexerToken* currentToken;
 
+	process->waitingTime = 0;
+	process->turnaroundTime = 0;
+
     for (int i = 0; i < 3; i++)
     {
         currentToken = VectorGet(++(*currentTokenIndex), tokens);
@@ -53,6 +56,7 @@ bool ParseProcess(Vector* tokens, unsigned int* currentTokenIndex, InputProcess*
             }
 
             process->burstLength = currentToken->numTokenValue;
+			process->remainingTime = currentToken->numTokenValue;
         }
         else
         {

@@ -47,6 +47,22 @@ typedef struct tagInputProcess
      * The time at which this process arrived.
      */
     unsigned int arrivalTime;
+
+	/**
+	* The time that this process has left.
+	*/
+	unsigned int remainingTime;
+
+	/**
+	* The amount of tume that this process has been waiting.
+	*/
+	unsigned int waitingTime;
+
+	/**
+	* The total amount of time from start to finish that this process took to complete.
+	*/
+	unsigned int turnaroundTime;
+
 } InputProcess;
 
 /**
