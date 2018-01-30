@@ -126,8 +126,7 @@ bool ReadScheduleFile(ScheduleData* fileData)
         }
         else if (strcmp(currentToken->strTokenValue, "runfor") == 0)
         {
-            // The next value in the file should be a number representing the number of processes that
-            // are in the file.
+            // The next value in the file should be a number representing how long to run the scheduler.
             currentToken = VectorGet(++currentTokenIndex, tokens);
             if (currentToken->tokenType != Number)
             {
@@ -136,7 +135,6 @@ bool ReadScheduleFile(ScheduleData* fileData)
                 break;
             }
 
-            // The next value in the file should be a number representing the run time for the scheduler.
             fileData->runLength = currentToken->numTokenValue;
         }
         else if (strcmp(currentToken->strTokenValue, "use") == 0)
@@ -187,9 +185,11 @@ bool ReadScheduleFile(ScheduleData* fileData)
             // The next 6 tokens should all be part of a process.
             InputProcess process;
             readSuccessful = ParseProcess(tokens, &currentTokenIndex, &process);
-            VectorAdd(&process, fileData->processes);
+
             if (!readSuccessful)
                 break;
+
+            VectorAdd(&process, fileData->processes);
         }
         else if (strcmp(currentToken->strTokenValue, "end") == 0)
         {
