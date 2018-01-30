@@ -1,11 +1,16 @@
 cmake_minimum_required(VERSION 2.8.4)
 
-# Declare out project.
+# Declare our project.
 project(Scheduling C)
 
-# Set the C Standard to 11 to avoid any annoying "old" C related pitfalls (such as having to declare for loop variables
-# before the loop.)
-set(CMAKE_C_STANDARD 11)
-
 # Create the executable project.
-add_executable(Scheduling main.c)
+add_executable(Scheduling main.c ScheduleFile.h ScheduleFile.c Scanner.h Scanner.c Lexer.h Lexer.c)
+
+# If a variable called PRINT_PROCESSES_DATA is set, the main method will first print out the processes data that
+# was read in before doing anything else. This is a helpful debugging utility.
+if (${PRINT_PROCESSES_DATA})
+    target_compile_definitions(Scheduling PRIVATE -DPRINT_PROCESSES_DATA)
+endif()
+
+# Link to the CLibExtensions library.
+target_link_libraries(Scheduling PRIVATE CLibExtensions)

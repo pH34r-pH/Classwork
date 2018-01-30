@@ -19,6 +19,9 @@
 .idea/**/gradle.xml
 .idea/**/libraries
 
+# All user specific stuff.
+.idea/
+
 # CMake
 cmake-build-debug/
 cmake-build-release/
