@@ -17,6 +17,7 @@ bool RunProcess (ScheduleData* inputData){
 	* How-to:
 	* Processes are completed in the order they are received.
 	*/
+<<<<<<< HEAD
 
 	InputProcess Queue[numProc];
 	int Head, Tail, clock;
@@ -68,6 +69,23 @@ bool RunProcess (ScheduleData* inputData){
 	fprintf(out, "Finished at time %d\n\n", clock);
 	for (int i = 0; i < Tail; ++i) {
 		fprintf(out, "%s wait %d turnaround %d\n", Queue[i]->processName, Queue[i]->waitingTime, Queue[i]->turnaroundTime);
+=======
+	Vector* Queue;
+	for (int clock = 0; clock < inputData->runLength; ++clock) 
+	{
+		// Iterate through processes to check for new arrivals
+		for (int i = 0; i < numProc; ++i) {
+			if (inputData->processes[i]->arrivalTime == clock) {
+				fprintf(out, "Time %d: %s arrived\n", clock, inputData->processes[i]->processName);
+				VectorAdd(inputData->processes[i], Queue);
+			}
+		}
+		// Continue working though whatever is at index 0 of the Queue, unless the Queue has nothing in it 
+		// or we are out of time.
+
+		// Update everything else to increment wait time
+
+>>>>>>> d53c830cc17d7a24ca7dc4e54637a6db3142bfa6
 	}
 
 	fclose(out);
