@@ -39,17 +39,22 @@ bool RunRRProcess (ScheduleData* inputData){
 				++Tail;
 			}
 		}
-
-		// Check if the head has finished
-		if (ListofProcesses[Queue[Head % numProc]].remainingTime == 0) {
-			fprintf(out, "Time %d: %s finished\n", clock, ListofProcesses[Queue[Head % numProc]].processName);
-			running = false;
-			++Head;
-			currentQuantum = quantum;
-		}
-
 		// Check if we have at least one ready process
-		if (Head != Tail) {
+		if (Head < Tail) {
+
+			// Check if the head has finished
+			if (ListofProcesses[Queue[Head % numProc]].remainingTime == 0) {
+				fprintf(out, "Time %d: %s finished\n", clock, ListofProcesses[Queue[Head % numProc]].processName);
+				running = false;
+				++Head;
+				currentQuantum = quantum;
+				// Check out now if we still have a ready process given that we just finished one
+				if(Head == Tail) {
+					fprintf(out, "Time %d: IDLE\n", clock);
+					continue;
+				}
+			}
+
 			// Check if we have a process running, or select a new process
 			if (!running) {
 				fprintf(
@@ -66,7 +71,7 @@ bool RunRRProcess (ScheduleData* inputData){
 			ListofProcesses[Queue[Head % numProc]].turnaroundTime += 1;
 			currentQuantum--;
 
-			for (int i = Head+1; i != Tail; i++) {
+			for (int i = Head+1; i < Tail; i++) {
 				if(ListofProcesses[Queue[i % numProc]].remainingTime > 0) {
 						ListofProcesses[Queue[i % numProc]].waitingTime += 1;
 					ListofProcesses[Queue[i % numProc]].turnaroundTime += 1;
@@ -85,10 +90,9 @@ bool RunRRProcess (ScheduleData* inputData){
 		}
 		// If Queue[Head] is null and we have clock time left, we are Idle
 		else {
-			fprintf(out, "Time %d: Idle\n", clock);
+			fprintf(out, "Time %d: IDLE\n", clock);
 		}
 	}
-
 	// Show results
 	fprintf(out, "Finished at time %d\n\n", clock);
 	for (int i = 0; i < numProc; ++i) {
