@@ -58,7 +58,7 @@ int main()
             break;
         case RoundRobin:
             // Call Round-Robin code.
-            RunProcess(&inputData);
+            RunRRProcess(&inputData);
             break;
     }
 

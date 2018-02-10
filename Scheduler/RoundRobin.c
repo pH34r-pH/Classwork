@@ -7,7 +7,7 @@
 #include <CLib/Vector.h>
 #include <stdlib.h>
 #include <stdio.h>
-bool RunProcess (ScheduleData* inputData){
+bool RunRRProcess (ScheduleData* inputData){
 	FILE *out = fopen("processes.out", "w");
 	int numProc = VectorCount(inputData->processes);
 	fprintf(out, "%d processes\nUsing Round Robin\n", numProc);
