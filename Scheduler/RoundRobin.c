@@ -39,6 +39,7 @@ bool RunRRProcess (ScheduleData* inputData){
 				++Tail;
 			}
 		}
+
 		// Check if we have at least one ready process
 		if (Head < Tail) {
 
@@ -77,7 +78,6 @@ bool RunRRProcess (ScheduleData* inputData){
 					ListofProcesses[Queue[i % numProc]].turnaroundTime += 1;
 				}
 			}
-
 			
 			// Check if we've reached exceeded the time quantum
 			if(currentQuantum == 0) {
@@ -93,6 +93,7 @@ bool RunRRProcess (ScheduleData* inputData){
 			fprintf(out, "Time %d: IDLE\n", clock);
 		}
 	}
+	
 	// Show results
 	fprintf(out, "Finished at time %d\n\n", clock);
 	for (int i = 0; i < numProc; ++i) {
