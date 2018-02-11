@@ -1,4 +1,5 @@
 #include "ScheduleFile.h"
+#include "FirstComeFirstServe.h"
 #include <stdio.h>
 
 void PrintScheduleData(ScheduleData* inputData)
@@ -12,6 +13,7 @@ void PrintScheduleData(ScheduleData* inputData)
     {
         case FCFS:
             printf("Scheduler Type: First-Come First-Served\n");
+	    RunProcess(inputData);
             break;
         case ShortestJob:
             printf("Scheduler Type: Shortest Job First\n");
