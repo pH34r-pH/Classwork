@@ -92,7 +92,7 @@ void ScannerReadNextString(char** strStart, unsigned int* strLength, Scanner* sc
     *strStart = scan->fileContents + scan->currentPos;
 
     // Move the scanner forward until a whitespace character is found, or the end of the file is reached.
-    while (!ScannerIsAtEnd(scan) && !isspace(scan->fileContents[scan->currentPos]))
+    while (!ScannerIsAtEnd(scan) && isalnum(scan->fileContents[scan->currentPos]))
     {
         length++;
         ScannerMoveForward(scan);
