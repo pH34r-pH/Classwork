@@ -72,7 +72,7 @@ bool LinkedListPush(const void* value, LinkedList* list)
 
 	return true;
 }
-#include <stdio.h>
+
 bool LinkedListInsert(const void* value, int index, LinkedList* list)
 {
 	// Index must be valid.
