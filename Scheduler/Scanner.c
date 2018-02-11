@@ -133,9 +133,6 @@ void ScannerMoveToNextLine(Scanner* scan)
     {
         ScannerMoveForward(scan);
     }
-
-    // Move the scanner forward once more to consume the new line character and be on the next line.
-    ScannerMoveForward(scan);
 }
 
 CharType ScannerGetCharType(Scanner* scan)

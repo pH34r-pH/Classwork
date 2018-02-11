@@ -151,19 +151,6 @@ Vector* LexerGetTokens(Lexer* lexer)
         return NULL;
     }
 
-    for (unsigned int i = 0; i < VectorCount(copyVector); i++)
-    {
-        LexerToken* token = VectorGet(i, copyVector);
-        if (token->tokenType == Number)
-        {
-            printf("Token %i, '%i'\n", i + 1, token->numTokenValue);
-        }
-        else if (token->tokenType == String)
-        {
-            printf("Token %i, '%s'\n", i + 1, token->strTokenValue);
-        }
-    }
-
     // Return the copy.
     return copyVector;
 }
