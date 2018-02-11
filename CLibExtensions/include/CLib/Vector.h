@@ -13,7 +13,7 @@ typedef struct tagVector Vector;
 
 // Creates a new vector object, allocating an initial size.
 CLIBRARY_API bool VectorCreate(unsigned int dataTypeSize, unsigned int initialCapacity, unsigned int maxCapacity,
-	EqualsFunction* equalImpl, Vector** vect);
+							   EqualsFunction* equalsImpl, CompareToFunction* compareImpl, Vector** vect);
 
 // Destroys a vector object.
 CLIBRARY_API void VectorDestroy(Vector** vect);
@@ -61,3 +61,7 @@ CLIBRARY_API void VectorClear(Vector* vect);
 // Copies all the contents of the vector "vect" to the end of the vector "vectOther".
 // Note this copies only the used part of the data, not any unused parts of data.
 CLIBRARY_API bool VectorCopy(Vector* vectOther, Vector* vect);
+
+// Sorts the items in a vector. This requires a pointer to an appropriate "CompareTo" method implementation
+// to have been set.
+CLIBRARY_API void VectorSort(Vector* vect);

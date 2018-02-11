@@ -16,12 +16,14 @@ typedef struct tagVector
 	void* data;
 	// The number of items stored in the vector.
 	unsigned int numItems;
-	// An equals implementation to compare two objects.
+	// A compare to implementation to compare two objects.
+	CompareToFunction* compareFunction;
+	// An equals implementation to check  if two objects are considered the same.
 	EqualsFunction* equalsFunction;
 } Vector;
 
 bool VectorCreate(unsigned int dataTypeSize, unsigned int initialCapacity, unsigned int maxCapacity,
-				  EqualsFunction* equalImpl, Vector** vect)
+				  EqualsFunction* equalsImpl, CompareToFunction* compareImpl, Vector** vect)
 {
 	if (dataTypeSize <= 0)
 		return false;
@@ -34,7 +36,8 @@ bool VectorCreate(unsigned int dataTypeSize, unsigned int initialCapacity, unsig
 	(*vect)->maxCapacity = maxCapacity;
 	(*vect)->numItems = 0;
 	(*vect)->currentCapacity = initialCapacity;
-	(*vect)->equalsFunction = equalImpl;
+	(*vect)->compareFunction = compareImpl;
+	(*vect)->equalsFunction = equalsImpl;
 	(*vect)->data = calloc(initialCapacity, dataTypeSize);
 
 	return true;
@@ -258,4 +261,61 @@ bool VectorCopy(Vector* vectOther, Vector* vect)
 	vectOther->numItems = resultSize;
 
 	return true;
+}
+
+void QSSwap(Vector *vect, int index1, int index2)
+{
+	if (index1 == index2)
+		return;
+
+	// Copy the value at index 1 to temp.
+	void* temp = malloc(vect->dataTypeSize);
+	memcpy(temp, vect->data + (vect->dataTypeSize * index1), vect->dataTypeSize);
+
+	// Overwrite the value at index 1 with the value in index 2.
+	memmove(vect->data + (vect->dataTypeSize * index1), vect->data + (vect->dataTypeSize * index2), vect->dataTypeSize);
+
+	// Complete the swap by copying the temp value back into the data array.
+	memcpy(vect->data + (vect->dataTypeSize * index2), temp, vect->dataTypeSize);
+
+	// Free the temp value.
+	free(temp);
+}
+
+int QSPartition(Vector* vect, int lowIndex, int highIndex)
+{
+    void* pivotValue = VectorGet(highIndex, vect);
+    int i = (lowIndex - 1);
+
+    for (int j = lowIndex; j <= highIndex - 1; j++)
+    {
+        if (vect->compareFunction(VectorGet(j, vect), pivotValue) <= 0)
+        {
+            i++;
+            QSSwap(vect, i, j);
+        }
+    }
+
+    QSSwap(vect, i+1, highIndex);
+    return i + 1;
+}
+
+void QuickSort(Vector* vect, int low, int high)
+{
+	// Only have to sort if we are sorting more than one number.
+	if (low < high)
+	{
+        int pivot = QSPartition(vect, low, high);
+        QuickSort(vect, low, pivot - 1);
+        QuickSort(vect, pivot + 1, high);
+	}
+}
+
+void VectorSort(Vector* vect)
+{
+	// Make sure the compare function is defined.
+	assert(vect->compareFunction != NULL);
+
+	// Call QuickSort to sort the values in the vector.
+	QuickSort(vect, 0, vect->numItems - 1);
 }

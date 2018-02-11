@@ -30,7 +30,7 @@ bool LexerCreate(Lexer** lexer)
         return false;
 
     // Instantiate the vector.
-    if (!VectorCreate(sizeof(LexerToken), 50, 0, NULL, &(*lexer)->tokens))
+    if (!VectorCreate(sizeof(LexerToken), 50, 0, NULL, NULL, &(*lexer)->tokens))
     {
         free(*lexer);
         return false;
@@ -139,7 +139,7 @@ bool LexerParseFile(const char* filename, Lexer* lexer)
 Vector* LexerGetTokens(Lexer* lexer)
 {
     Vector* copyVector;
-    if (!VectorCreate(sizeof(LexerToken), VectorCount(lexer->tokens), 0, NULL, &copyVector))
+    if (!VectorCreate(sizeof(LexerToken), VectorCount(lexer->tokens), 0, NULL, NULL, &copyVector))
     {
         return NULL;
     }
