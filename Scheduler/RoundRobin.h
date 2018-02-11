@@ -7,5 +7,5 @@
 
 #include "ScheduleFile.h"
 
-bool RunRRProcess (ScheduleData* inputData);
+void RunRRProcess (ScheduleData* inputData);
 //SCHEDULER_ROUNDROBIN_H

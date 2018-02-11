@@ -72,7 +72,7 @@ bool LinkedListPush(const void* value, LinkedList* list)
 
 	return true;
 }
-
+#include <stdio.h>
 bool LinkedListInsert(const void* value, int index, LinkedList* list)
 {
 	// Index must be valid.
@@ -80,7 +80,7 @@ bool LinkedListInsert(const void* value, int index, LinkedList* list)
 		return false;
 
 	// Just call LinkedListPush if the index is the end of the list.
-	if (index == list->numItems - 1)
+	if (index == list->numItems)
 		return LinkedListPush(value, list);
 
 	// Create the new node.
@@ -88,13 +88,12 @@ bool LinkedListInsert(const void* value, int index, LinkedList* list)
 	newNode->data = calloc(1, list->dataTypeSize);
 	memcpy(newNode->data, value, list->dataTypeSize);
 
-	if(list->numItems == 1)
+	if(index == 0)
 	{
-		// This is the second node, and it is being inserted as the head node (being inserted as the tail is handled
-		// by LinkedListPush call). Make this new node the head and make it point to the other node (which is already
-		// set as the tail).
+		// The newNode is being inserted as the head node (being inserted as the tail is handled
+		// by LinkedListPush call). Make this new node the head and make it point to the old head
+		newNode->next = list->head;
 		list->head = newNode;
-		list->head->next = list->tail;
 	}
 	else
 	{
@@ -106,7 +105,6 @@ bool LinkedListInsert(const void* value, int index, LinkedList* list)
 			iterNode = iterNode->next;
 			currentIndex++;
 		}
-
 		// Make the new node point to what the current node points at, and make the current node
 		// point at the new node.
 		newNode->next = iterNode->next;

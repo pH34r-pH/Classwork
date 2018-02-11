@@ -7,7 +7,7 @@
 #include <CLib/Vector.h>
 #include <stdlib.h>
 #include <stdio.h>
-bool RunRRProcess (ScheduleData* inputData){
+void RunRRProcess (ScheduleData* inputData){
 	FILE *out = fopen("processes.out", "w");
 	int numProc = VectorCount(inputData->processes);
 	fprintf(out, "%d processes\nUsing Round Robin\n", numProc);
@@ -17,10 +17,10 @@ bool RunRRProcess (ScheduleData* inputData){
 	* Processes are completed in a Round Robin fashion.
 	*/
 
-	int Queue[numProc];
+	LinkedList* list;
 	InputProcess ListofProcesses[numProc];
-	int Head, Tail, clock, quantum, currentQuantum;
-	Head = Tail = clock = 0;
+	int Head, clock, quantum, currentQuantum;
+	Head = clock = 0;
 	currentQuantum = quantum = inputData->timeQuantum;
 	bool running = false;
 
@@ -30,61 +30,85 @@ bool RunRRProcess (ScheduleData* inputData){
 		ListofProcesses[i] = (*(InputProcess*)VectorGet(i, inputData->processes));
 	}
 
-	for (; clock < inputData->runLength; ++clock) {
+	LinkedListCreate(sizeof(int), &list);
+
+	for (; clock < inputData->runLength+1; ++clock) {
 		// Check for new arrivals
 		for (int i = 0; i < numProc; ++i) {
 			if (ListofProcesses[i].arrivalTime == clock) {
-				Queue[Tail % numProc] = i;
-				fprintf(out, "Time %d: %s arrived\n", clock, ListofProcesses[Queue[Tail % numProc]].processName);
-				++Tail;
+				int j = 0;
+				// Check to see if the new arrival should be inserted inside the linked list
+				for (; j < LinkedListCount(list); j++)
+				{
+					if(i < *(int*)LinkedListGet(j, list)) {
+						LinkedListInsert(&i, j, list);
+						break;
+					}
+				}
+				// Check to see if the new arrival should be inserted at the tail
+				if(j == LinkedListCount(list)) {
+					LinkedListPush(&i, list);
+				}
+				// Check to see if Head should be incremented to point to the same node in the list
+				if(Head >= j && LinkedListCount(list) > 1) {
+					++Head;
+				}
+				fprintf(out, "Time %d: %s arrived\n", clock, ListofProcesses[i].processName);
 			}
 		}
-
 		if(running) {
-			// Check if we the current process just finished
-			if (ListofProcesses[Queue[Head % numProc]].remainingTime == 0) {
-				fprintf(out, "Time %d: %s finished\n", clock, ListofProcesses[Queue[Head % numProc]].processName);
+			// Check if the current process just finished
+			if (ListofProcesses[*(int *)LinkedListGet(Head, list)].remainingTime == 0) {
+				fprintf(out, "Time %d: %s finished\n", clock, ListofProcesses[*(int *)LinkedListGet(Head, list)].processName);
+				LinkedListRemove(Head, list);
 				running = false;
-				++Head;
 				currentQuantum = quantum;
 			}
 			// Check if we've reached exceeded the time quantum
 			else if(currentQuantum == 0) {
 				running = false;
 				currentQuantum = quantum;
-				Queue[Tail % numProc] = Queue[Head % numProc];
 				++Head;
-				++Tail;
 			}
 		}
 
-		// Check if we have at least one ready process
-		if (Head < Tail) {
+		// Did we run out of time?
+		if(clock == inputData->runLength) {
+			break;
+		}
 
+		// Circle back around to the beginning of the linked list
+		if(Head >= LinkedListCount(list)) {
+			Head = 0;
+		}
+
+		// Check if we have at least one ready process
+		if (Head < LinkedListCount(list)) {
 			// Check if we have a process running, or select a new process
 			if (!running) {
 				fprintf(
 					out, "Time %d: %s selected (burst %d)\n",
 					clock,
-					ListofProcesses[Queue[Head % numProc]].processName,
-					ListofProcesses[Queue[Head % numProc]].remainingTime
+					ListofProcesses[*(int *)LinkedListGet(Head, list)].processName,
+					ListofProcesses[*(int *)LinkedListGet(Head, list)].remainingTime
 				);
 				running = true;
 			}
 
 			// Update process counters
-			ListofProcesses[Queue[Head % numProc]].remainingTime -= 1;
-			ListofProcesses[Queue[Head % numProc]].turnaroundTime += 1;
+			ListofProcesses[*(int *)LinkedListGet(Head, list)].remainingTime -= 1;
+			ListofProcesses[*(int *)LinkedListGet(Head, list)].turnaroundTime += 1;
 			currentQuantum--;
 
-			for (int i = Head+1; i < Tail; i++) {
-				if(ListofProcesses[Queue[i % numProc]].remainingTime > 0) {
-						ListofProcesses[Queue[i % numProc]].waitingTime += 1;
-					ListofProcesses[Queue[i % numProc]].turnaroundTime += 1;
+			for (int i = 0; i < LinkedListCount(list); i++) {
+				if(ListofProcesses[*(int *)LinkedListGet(i, list)].remainingTime > 0 &&
+					i != Head) {
+						ListofProcesses[*(int *)LinkedListGet(i, list)].waitingTime += 1;
+					ListofProcesses[*(int *)LinkedListGet(i, list)].turnaroundTime += 1;
 				}
 			}
 		}
-		// If Queue[Head] is null and we have clock time left, we are Idle
+		// If there is no available process and we have clock time left, we are Idle
 		else {
 			fprintf(out, "Time %d: IDLE\n", clock);
 		}
@@ -103,5 +127,5 @@ bool RunRRProcess (ScheduleData* inputData){
 	}
 
 	fclose(out);
-    return true;
+  return;
 }
