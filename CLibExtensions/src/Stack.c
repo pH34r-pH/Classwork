@@ -23,7 +23,7 @@ bool StackCreate(int dataTypeSize, int initialCapacity, int maxStackSize, Stack*
 
 	// Instantiate the underlying vector.
 	initialCapacity = initialCapacity <= 0 ? DEFAULT_STACK_INITIAL_CAPACITY : initialCapacity;
-	if (!VectorCreate(dataTypeSize, initialCapacity, maxStackSize, NULL, &(*stackObj)->vect))
+	if (!VectorCreate(dataTypeSize, initialCapacity, maxStackSize, NULL, NULL, &(*stackObj)->vect))
 	{
 		free(*stackObj);
 		*stackObj = NULL;

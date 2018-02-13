@@ -24,7 +24,7 @@ typedef bool EqualsFunction(const void* obj1, const void* obj2);
 
 // A CompareTo Function type that can be used to compare two objects, determining if they are
 // equal, one is less than the other, or one is greater than the other.
-typedef int ComapreToFunction(const void* obj1, const void* obj2);
+typedef int CompareToFunction(const void* obj1, const void* obj2);
 
 // An implementation for the Equals function that compares two characters to each other.
 CLIBRARY_API bool CharacterEquals(const void* obj1, const void* obj2);
