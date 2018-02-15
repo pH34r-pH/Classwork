@@ -57,6 +57,13 @@ void RunFCFSProcess (ScheduleData* inputData){
 			headProcess->remainingTime -= 1;
 			headProcess->turnaroundTime += 1;
 
+			// Update everything else
+			for(int i = head+1; i < tail; ++i){
+				InputProcess* thisProcess = VectorGet(i, queue);
+				thisProcess->turnaroundTime += 1;
+				thisProcess->waitingTime += 1;
+			}
+
 			if(headProcess->remainingTime == 0){
 				if(debug) printf("Time %d: %s finished\n", clock, headProcess->processName);
 				fprintf(out, "Time %d: %s finished\n", clock, headProcess->processName);
@@ -70,13 +77,6 @@ void RunFCFSProcess (ScheduleData* inputData){
 				if(debug) printf("Time %d: %s selected (burst %d)\n", clock, newProcess->processName, newProcess->remainingTime);
 				fprintf(out, "Time %d: %s selected (burst %d)\n", clock, newProcess->processName, newProcess->remainingTime);
 				running = true;
-			}
-
-			// Update everything else
-			for(int i = head+1; i < tail; ++i){
-				InputProcess* thisProcess = VectorGet(i, queue);
-				thisProcess->turnaroundTime += 1;
-				thisProcess->waitingTime += 1;
 			}
 			
 		}
