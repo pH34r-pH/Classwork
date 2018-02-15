@@ -1,5 +1,6 @@
 #include "ScheduleFile.h"
 #include "RoundRobin.h"
+#include "SJF.h"
 #include <stdio.h>
 
 void PrintScheduleData(ScheduleData* inputData)
@@ -55,6 +56,7 @@ int main()
             break;
         case ShortestJob:
             // Call Shortest Job First code.
+            RunPreemptiveSJFProcess(&inputData);
             break;
         case RoundRobin:
             // Call Round-Robin code.
