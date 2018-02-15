@@ -359,7 +359,7 @@ void HashTableRehash(HashTable* hash)
 	// then insert them into a vector for temporary storage. This vector will just store the pointers (so essentially
 	// numbers) for each HashTableItem, instead of the item itself.
 	Vector* hashTableItems;
-	VectorCreate(sizeof(uintptr_t), hash->numItems, hash->numItems, NULL, &hashTableItems);
+	VectorCreate(sizeof(uintptr_t), hash->numItems, hash->numItems, NULL, NULL, &hashTableItems);
 
 	for(int i = 0; i < oldArrayLength; i++)
 	{

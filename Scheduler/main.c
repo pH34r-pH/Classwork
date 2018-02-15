@@ -1,5 +1,6 @@
 #include "ScheduleFile.h"
 #include "FirstComeFirstServe.h"
+#include "RoundRobin.h"
 #include <stdio.h>
 
 void PrintScheduleData(ScheduleData* inputData)
@@ -59,6 +60,7 @@ int main()
             break;
         case RoundRobin:
             // Call Round-Robin code.
+            RunRRProcess(&inputData);
             break;
     }
 

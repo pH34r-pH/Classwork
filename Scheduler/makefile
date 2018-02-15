@@ -14,7 +14,8 @@ BINARY_NAME = Scheduler
 LIBRARIES = CExtensions
 OBJ_PATH = obj/
 BIN_PATH = bin/
-OBJECTS = $(OBJ_PATH)Lexer.o $(OBJ_PATH)Scanner.o $(OBJ_PATH)ScheduleFile.o $(OBJ_PATH)main.o $(OBJ_PATH)FirstComeFirstServe.o
+OBJECTS = $(OBJ_PATH)Lexer.o $(OBJ_PATH)Scanner.o $(OBJ_PATH)ScheduleFile.o $(OBJ_PATH)main.o $(OBJ_PATH)RoundRobin.o $(OBJ_PATH)FirstComeFirstServe.o
+
 
 # Command line variables.
 ifdef PRINT_PROCESSES_DATA

@@ -8,6 +8,25 @@
 #include <stdlib.h>
 #include <string.h>
 
+int ProcessArrivalCompareTo(const void* obj1, const void* obj2)
+{
+    InputProcess* process1 = (InputProcess*)obj1;
+    InputProcess* process2 = (InputProcess*)obj2;
+
+    // Compare the arrival times of the processes.
+    if (process1->arrivalTime < process2->arrivalTime)
+    {
+        return -1;
+    }
+    else if (process1->arrivalTime > process2->arrivalTime)
+    {
+        return 1;
+    }
+
+    // If they have the same arrival time, compare the names of the processes.
+    return strcmp(process1->processName, process2->processName);
+}
+
 // Once a process line is identified, this will handle the tokens that make
 // up a process line, returning false if any of the tokens are invalid. The main
 // code should have the currentTokenIndex positioned on "process".
@@ -121,7 +140,10 @@ bool ReadScheduleFile(ScheduleData* fileData)
             }
 
             // Using the number of expected processes, initialize the vector of processes to contain them all.
-            if (!VectorCreate(sizeof(InputProcess), currentToken->numTokenValue, 0, NULL, &fileData->processes))
+            // We also provide a compare to callback so this vector can be sorted by the order that processes
+            // arrive.
+            if (!VectorCreate(sizeof(InputProcess), currentToken->numTokenValue, 0, NULL, ProcessArrivalCompareTo,
+                              &fileData->processes))
             {
                 fprintf(stderr, "Failed to initialize a vector to contain the input processes.\n");
                 readSuccessful = false;
@@ -227,6 +249,9 @@ bool ReadScheduleFile(ScheduleData* fileData)
 
     // Destroy the lexer.
     LexerDestroy(&lexer);
+
+    // Finally, with the processes all read in, sort them so earliest arrivals come in first.
+    VectorSort(fileData->processes);
 
     return readSuccessful;
 }
