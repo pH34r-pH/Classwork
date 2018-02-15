@@ -13,7 +13,6 @@ void PrintScheduleData(ScheduleData* inputData)
     {
         case FCFS:
             printf("Scheduler Type: First-Come First-Served\n");
-	    RunProcess(inputData);
             break;
         case ShortestJob:
             printf("Scheduler Type: Shortest Job First\n");
@@ -53,6 +52,7 @@ int main()
     {
         case FCFS:
             // Call First-Come First-Served code.
+            RunFCFSProcess(&inputData);
             break;
         case ShortestJob:
             // Call Shortest Job First code.

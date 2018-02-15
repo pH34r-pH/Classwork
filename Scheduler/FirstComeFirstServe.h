@@ -4,4 +4,4 @@
 
 #pragma once
 #include "ScheduleFile.h"
-void RunProcess (ScheduleData* inputData);
+void RunFCFSProcess (ScheduleData* inputData);

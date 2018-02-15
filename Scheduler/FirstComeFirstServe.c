@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-void RunProcess (ScheduleData* inputData){
+void RunFCFSProcess (ScheduleData* inputData){
 	bool debug = false;		
 	
 	if(debug) printf("Starting FCFS\n");
@@ -22,8 +22,8 @@ void RunProcess (ScheduleData* inputData){
 
 	int numProc = VectorCount(inputData->processes);
 
-	if(debug) printf("%d processes\nUsing First Come First Serve\n\n", numProc);
-	fprintf(out, "%d processes\nUsing First Come First Serve\n\n", numProc);
+	if(debug) printf("%d processes\nUsing First-Come First-Serve\n\n", numProc);
+	fprintf(out, "%d processes\nUsing First-Come First-Serve\n\n", numProc);
 
 	/*
 	* How-to:
@@ -31,13 +31,13 @@ void RunProcess (ScheduleData* inputData){
 	*/
 
 	Vector* queue;
-	VectorCreate(sizeof(InputProcess), numProc, 0, NULL, NULL, &queue);
+	VectorCreate(sizeof(InputProcess), numProc, 0, NULL, &queue);
 	int head, tail, clock;
 	head = tail = clock = 0;
 	bool running = false;
 	
 	if(debug) printf("Beginning processing:\n");
-	for (; clock < inputData->runLength; ++clock) 
+	for (; clock <= inputData->runLength; ++clock) 
 	{
 		// Iterate through processes to check for new arrivals
 		for (int i = 0; i < numProc; ++i) {
@@ -87,8 +87,8 @@ void RunProcess (ScheduleData* inputData){
 		}		
 	}		
 	// Show results
-	if(debug) printf("Finished at time %d\n\n", clock);
-	fprintf(out, "Finished at time %d\n\n", clock);
+	if(debug) printf("Finished at time %d\n\n", clock-1);
+	fprintf(out, "Finished at time %d\n\n", clock-1);
 	for(int i = 0; i < tail; ++i){
 		InputProcess* thisProcess = VectorGet(i, queue);
 		if(debug) printf("%s wait %d turnaround %d\n", thisProcess->processName, thisProcess->waitingTime, thisProcess->turnaroundTime);
