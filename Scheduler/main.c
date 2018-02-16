@@ -1,4 +1,5 @@
 #include "ScheduleFile.h"
+#include "FirstComeFirstServe.h"
 #include "RoundRobin.h"
 #include "SJF.h"
 #include <stdio.h>
@@ -53,6 +54,7 @@ int main()
     {
         case FCFS:
             // Call First-Come First-Served code.
+            RunFCFSProcess(&inputData);
             break;
         case ShortestJob:
             // Call Shortest Job First code.
