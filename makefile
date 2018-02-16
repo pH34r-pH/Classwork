@@ -2,7 +2,7 @@
 
 # Compile variables.
 CC = gcc
-CFLAGS = -std=c99
+CFLAGS = -std=c99 -Wall
 
 # The paths to the various parts of the overall "solution"
 CLIBEXT_PATH = CLibExtensions/
