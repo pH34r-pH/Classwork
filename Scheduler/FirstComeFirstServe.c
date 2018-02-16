@@ -22,8 +22,8 @@ void RunFCFSProcess (ScheduleData* inputData){
 
 	int numProc = VectorCount(inputData->processes);
 
-	if(debug) printf("%d processes\nUsing First-Come First-Serve\n\n", numProc);
-	fprintf(out, "%d processes\nUsing First-Come First-Serve\n\n", numProc);
+	if(debug) printf("%d processes\nUsing First Come First Served\n\n", numProc);
+	fprintf(out, "%d processes\nUsing First Come First Served\n\n", numProc);
 
 	/*
 	* How-to:
