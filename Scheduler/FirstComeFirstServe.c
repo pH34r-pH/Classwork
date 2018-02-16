@@ -31,7 +31,7 @@ void RunFCFSProcess (ScheduleData* inputData){
 	*/
 
 	Vector* queue;
-	VectorCreate(sizeof(InputProcess), numProc, 0, NULL, &queue);
+	VectorCreate(sizeof(InputProcess), numProc, 0, NULL, NULL, &queue);
 	int head, tail, clock;
 	head = tail = clock = 0;
 	bool running = false;
@@ -74,6 +74,7 @@ void RunFCFSProcess (ScheduleData* inputData){
 			// If head has finished or we are idle, and there is still at least one ready process, select a new process
 			if(!running && head != tail){
 				InputProcess* newProcess = VectorGet(head, queue);
+                newProcess->remainingTime += 1; // Correcting an off-by-one caused by the section under "Check if head has finished"
 				if(debug) printf("Time %d: %s selected (burst %d)\n", clock, newProcess->processName, newProcess->remainingTime);
 				fprintf(out, "Time %d: %s selected (burst %d)\n", clock, newProcess->processName, newProcess->remainingTime);
 				running = true;
