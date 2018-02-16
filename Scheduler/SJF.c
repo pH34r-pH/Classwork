@@ -99,7 +99,7 @@ void RunPreemptiveSJFProcess (ScheduleData* inputData){
 		}
 		// If there is no available process and we have clock time left, we are Idle
 		else {
-			fprintf(out, "Time %d: Idle\n", clock);
+			fprintf(out, "Time %d: IDLE\n", clock);
 		}
 	}
 
