@@ -45,6 +45,7 @@ void RunFCFSProcess (ScheduleData* inputData){
 			if (process->arrivalTime == clock) {
 				if(debug) printf("Time %d: %s arrived\n", clock, process->processName);
 				fprintf(out, "Time %d: %s arrived\n", clock, process->processName);
+				process->remainingTime = process->burstLength;
 				VectorAdd(process, queue);
 				++tail;
 			}
@@ -54,14 +55,18 @@ void RunFCFSProcess (ScheduleData* inputData){
 
 			// Check if head has finished
 			InputProcess* headProcess = VectorGet(head, queue);
-			headProcess->remainingTime -= 1;
-			headProcess->turnaroundTime += 1;
+			if(headProcess->arrivalTime != clock){
+				headProcess->remainingTime -= 1;
+				headProcess->turnaroundTime += 1;
+			}
 
 			// Update everything else
 			for(int i = head+1; i < tail; ++i){
 				InputProcess* thisProcess = VectorGet(i, queue);
-				thisProcess->turnaroundTime += 1;
-				thisProcess->waitingTime += 1;
+				if(thisProcess->arrivalTime != clock){
+					thisProcess->turnaroundTime += 1;
+					thisProcess->waitingTime += 1;
+				}
 			}
 
 			if(headProcess->remainingTime == 0){
@@ -74,17 +79,15 @@ void RunFCFSProcess (ScheduleData* inputData){
 			// If head has finished or we are idle, and there is still at least one ready process, select a new process
 			if(!running && head != tail){
 				InputProcess* newProcess = VectorGet(head, queue);
-                newProcess->remainingTime += 1; // Correcting an off-by-one caused by the section under "Check if head has finished"
-				if(debug) printf("Time %d: %s selected (burst %d)\n", clock, newProcess->processName, newProcess->remainingTime);
-				fprintf(out, "Time %d: %s selected (burst %d)\n", clock, newProcess->processName, newProcess->remainingTime);
+				if(debug) printf("Time %d: %s selected (burst %d)\n", clock, newProcess->processName, newProcess->burstLength);
+				fprintf(out, "Time %d: %s selected (burst %d)\n", clock, newProcess->processName, newProcess->burstLength);
 				running = true;
 			}
-			
 		}
 		// No ready processes means we're Idle
 		else {
-			if(debug) printf("Time %d: Idle\n", clock);
-			fprintf(out, "Time %d: Idle\n", clock);
+			if(debug) printf("Time %d: IDLE\n", clock);
+			fprintf(out, "Time %d: IDLE\n", clock);
 		}		
 	}		
 	// Show results
