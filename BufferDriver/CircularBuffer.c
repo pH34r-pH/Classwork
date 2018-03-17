@@ -1,4 +1,3 @@
-
 /**
  * @file CircularBuffer.c
  */
@@ -6,8 +5,9 @@
 #include "CircularBuffer.h"
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 
-bool circular_buffer_create(CircularBuffer* circBuffer)
+bool CircularBufferCreate(CircularBuffer* circBuffer)
 {
 	assert(circBuffer != NULL);
 
@@ -17,13 +17,13 @@ bool circular_buffer_create(CircularBuffer* circBuffer)
 	return true;
 }
 
-void circular_buffer_clear(CircularBuffer* circBuffer)
+void CircularBufferClear(CircularBuffer* circBuffer)
 {
 	circBuffer->head = circBuffer->tail = 0;
 	circBuffer->isFull = false;
 }
 
-void circular_buffer_add_byte(unsigned char byte, CircularBuffer* circBuffer)
+void CircularBufferAddByte(unsigned char byte, CircularBuffer* circBuffer)
 {
 	assert(circBuffer != NULL);
 
@@ -40,12 +40,12 @@ void circular_buffer_add_byte(unsigned char byte, CircularBuffer* circBuffer)
 	}
 }
 
-unsigned char circular_buffer_get_byte(CircularBuffer* circBuffer)
+unsigned char CircularBufferGetByte(CircularBuffer* circBuffer)
 {
 	assert(circBuffer != NULL);
 
 	// Must not attempt to get a byte when the buffer is empty.
-	assert(!circular_buffer_is_empty(circBuffer));
+	assert(!CircularBufferIsEmpty(circBuffer));
 
 	// Get the byte to return.
 	unsigned char byte = circBuffer->buffer[circBuffer->tail];
@@ -60,7 +60,7 @@ unsigned char circular_buffer_get_byte(CircularBuffer* circBuffer)
 	return byte;
 }
 
-unsigned short circular_buffer_count(CircularBuffer* circBuffer)
+unsigned short CircularBufferCount(CircularBuffer* circBuffer)
 {
 	assert(circBuffer != NULL);
 
@@ -87,7 +87,7 @@ unsigned short circular_buffer_count(CircularBuffer* circBuffer)
 	return 0;
 }
 
-bool circular_buffer_is_empty(CircularBuffer* circBuffer)
+bool CircularBufferIsEmpty(CircularBuffer* circBuffer)
 {
 	assert(circBuffer != NULL);
 
@@ -99,7 +99,7 @@ bool circular_buffer_is_empty(CircularBuffer* circBuffer)
 	return false;
 }
 
-bool circular_buffer_is_full(CircularBuffer* circBuffer)
+bool CircularBufferIsFull(CircularBuffer* circBuffer)
 {
 	assert(circBuffer != NULL);
 
