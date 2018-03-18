@@ -12,7 +12,7 @@
 #else
 #if CIRCULAR_BUFFER_CAPACITY_BYTES < 1024
 #error When 'CIRCULAR_BUFFER_CAPACITY_BYTES' is specified, it must be a value greater\
-than or equal to 1024.
+ than or equal to 1024.
 #endif
 #endif
 
@@ -41,19 +41,11 @@ typedef struct
 	/**
 	 * Whether or not the circular buffer is currently empty.
 	 */
-	bool isFull;
+	bool isEmpty;
 } CircularBuffer;
 
 /**
- * Initializes the contents of a circular buffer.
- * @param bufferSize The size that the circular buffer should be.
- * @param buffer The CircularBuffer object to initialize.
- * @return True if the operation succeeds, otherwise false.
- */
-bool CircularBufferCreate(CircularBuffer* buffer);
-
-/**
- * Clears the circular buffer, emptying it of contents.
+ * Clears the circular buffer, emptying it of contents. This doubles as initialization.
  * @param buffer The CircularBuffer object to initialize.
  */
 void CircularBufferClear(CircularBuffer* buffer);
@@ -69,7 +61,8 @@ void CircularBufferClear(CircularBuffer* buffer);
 void CircularBufferAddByte(unsigned char byte, CircularBuffer* buffer);
 
 /**
- * Gets a single byte from the specified circular buffer if it isn't empty.
+ * Gets the next byte from the specified circular buffer if it isn't empty. This
+ * will remove the byte from the buffer.
  * @param buffer The CircularBuffer object to use.
  * @return The next available byte in the circular buffer.
  */
@@ -84,12 +77,14 @@ unsigned short CircularBufferCount(CircularBuffer* buffer);
 
 /**
  * Gets whether or not the circular buffer is empty.
+ * @param buffer The CircularBuffer object to use.
  * @return True if the buffer is empty, otherwise false.
  */
 bool CircularBufferIsEmpty(CircularBuffer* buffer);
 
 /**
  * Gets whether or not the circular buffer is full.
+ * @param buffer The CircularBuffer object to use.
  * @return True if the buffer is full, otherwise false.
  */
 bool CircularBufferIsFull(CircularBuffer* buffer);

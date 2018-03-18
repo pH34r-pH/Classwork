@@ -5,8 +5,13 @@ BufferDriver-objs := CircularBuffer.o
 
 # Compiler variables.
 CC = gcc
-CFLAGS = -std=c99
+CFLAGS = -std=c99 -g
 CFLAGS_LINK = -static
+
+# Command line variables.
+ifdef CIRCULAR_BUFFER_CAPACITY
+	CFLAGS += -DCIRCULAR_BUFFER_CAPACITY_BYTES=$(CIRCULAR_BUFFER_CAPACITY)
+endif
 
 # Other variables.
 TEST_BINARY_NAME = CircularBufferTest

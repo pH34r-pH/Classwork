@@ -7,20 +7,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-bool CircularBufferCreate(CircularBuffer* circBuffer)
-{
-	assert(circBuffer != NULL);
-
-	// First, reset the CircularBuffer object so all values are zeroed.
-	memset(circBuffer, 0, sizeof(CircularBuffer));
-
-	return true;
-}
-
 void CircularBufferClear(CircularBuffer* circBuffer)
 {
 	circBuffer->head = circBuffer->tail = 0;
-	circBuffer->isFull = false;
+	circBuffer->isEmpty = true;
+    memset(circBuffer->buffer, 0, CIRCULAR_BUFFER_CAPACITY_BYTES);
 }
 
 void CircularBufferAddByte(unsigned char byte, CircularBuffer* circBuffer)
@@ -33,11 +24,8 @@ void CircularBufferAddByte(unsigned char byte, CircularBuffer* circBuffer)
 	// Move the head forward, wrapping to the front if necessary.
 	circBuffer->head = (circBuffer->head + 1) % CIRCULAR_BUFFER_CAPACITY_BYTES;
 
-	// If the head coincides with the tail, the buffer has become full.
-	if (circBuffer->head == circBuffer->tail)
-	{
-		circBuffer->isFull = true;
-	}
+    // By adding a byte, we're definitely no longer empty.
+    circBuffer->isEmpty = false;
 }
 
 unsigned char CircularBufferGetByte(CircularBuffer* circBuffer)
@@ -53,8 +41,11 @@ unsigned char CircularBufferGetByte(CircularBuffer* circBuffer)
 	// Move the tail forward, wrapping around if necessary.
 	circBuffer->tail = (circBuffer->tail + 1) % CIRCULAR_BUFFER_CAPACITY_BYTES;
 
-	// If the buffer was full, it isn't anymore.
-	circBuffer->isFull = false;
+	// The buffer is empty if head equals tail and isEmpty is false.
+    if (circBuffer->tail == circBuffer->head && !circBuffer->isEmpty)
+    {
+        circBuffer->isEmpty = true;
+    }
 
 	// Return the retrieved byte.
 	return byte;
@@ -79,11 +70,11 @@ unsigned short CircularBufferCount(CircularBuffer* circBuffer)
 	else
 	{
 		// The buffer is either full or empty.
-		return circBuffer->isFull ? CIRCULAR_BUFFER_CAPACITY_BYTES : 0;
+		return circBuffer->isEmpty ? 0 : CIRCULAR_BUFFER_CAPACITY_BYTES;
 	}
 
 	// Unnecessary return to remove GCC warning about control reaching end of non-void function. It's not actually
-	// possible to reac this part of the function.
+	// possible to reach this part of the function.
 	return 0;
 }
 
@@ -91,17 +82,18 @@ bool CircularBufferIsEmpty(CircularBuffer* circBuffer)
 {
 	assert(circBuffer != NULL);
 
-	if (circBuffer->head == circBuffer->tail && circBuffer->isFull == false)
-	{
-		return true;
-	}
-
-	return false;
+	return circBuffer->isEmpty;
 }
 
 bool CircularBufferIsFull(CircularBuffer* circBuffer)
 {
-	assert(circBuffer != NULL);
+    assert(circBuffer != NULL);
 
-	return circBuffer->isFull;
+    // The buffer is full if isEmpty is false and the head is greater than (overflowed) or equal to (full) the tail.
+    if (!circBuffer->isEmpty && circBuffer->head >= circBuffer->tail)
+    {
+        return true;
+    }
+
+    return false;
 }

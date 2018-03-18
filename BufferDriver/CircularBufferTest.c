@@ -2,20 +2,40 @@
  * @file CircularBufferTest.c
  */
 
-#define CIRCULAR_BUFFER_CAPACITY_BYTES 2056
-
 #include "CircularBuffer.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
 
+void CircularBufferShouldHaveNoDataAfterBeingCleared()
+{
+    CircularBuffer buffer;
+    CircularBufferClear(&buffer);
+    
+    assert(CircularBufferCount(&buffer) == 0);
+}
+
+void CircularBufferShouldReportEmptyWhenZeroBytesInBuffer()
+{
+    CircularBuffer buffer;
+    CircularBufferClear(&buffer);
+
+    for (unsigned int i = 0; i < 10; i++)
+    {
+        CircularBufferAddByte('A', &buffer);
+    }
+    for (unsigned int i = 0; i < 10; i++)
+    {
+        CircularBufferGetByte(&buffer);
+    }
+
+    assert(CircularBufferIsEmpty(&buffer));
+}
+
 void CircularBufferSizeShouldEqualNumberOfBytesInBuffer()
 {
     CircularBuffer buffer;
-    CircularBufferCreate(&buffer);
-
-    assert(!CircularBufferIsFull(&buffer));
-    assert(CircularBufferCount(&buffer) == 0);
+    CircularBufferClear(&buffer);
 
     for (unsigned int i = 0; i < 10; i++)
     {
@@ -25,24 +45,49 @@ void CircularBufferSizeShouldEqualNumberOfBytesInBuffer()
     assert(CircularBufferCount(&buffer) == 10);
 }
 
-void CircularBufferShouldReportFullWhenFull()
+void CircularBufferShouldAddAndRemoveInQueueOrder()
+{
+    static unsigned char bufferContents[7] = {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
+    CircularBuffer buffer;
+    CircularBufferClear(&buffer);
+
+    for (unsigned int i = 0; i < 7; i++)
+    {
+        CircularBufferAddByte(bufferContents[i], &buffer);
+    }
+
+    for (unsigned int i = 0; i < 7; i++)
+    {
+        unsigned char letter = CircularBufferGetByte(&buffer);
+        assert(letter == bufferContents[i]);
+    }
+}
+
+void CircularBufferShouldOverwriteOldestValuesWhenAddingToFullBuffer()
 {
     CircularBuffer buffer;
-    CircularBufferCreate(&buffer);
+    CircularBufferClear(&buffer);
 
     for (unsigned int i = 0; i < CIRCULAR_BUFFER_CAPACITY_BYTES; i++)
     {
         CircularBufferAddByte('A', &buffer);
     }
 
-    assert(CircularBufferIsFull(&buffer));
+    CircularBufferAddByte('B', &buffer);
+
+    assert(CircularBufferGetByte(&buffer) == 'B');
 }
 
 int main()
 {
+    printf("Running Circular Buffer tests using buffer of size %i bytes.\n", CIRCULAR_BUFFER_CAPACITY_BYTES);
+    
     // Execute all tests.
+    CircularBufferShouldHaveNoDataAfterBeingCleared();
+    CircularBufferShouldReportEmptyWhenZeroBytesInBuffer();
     CircularBufferSizeShouldEqualNumberOfBytesInBuffer();
-    CircularBufferShouldReportFullWhenFull();
+    CircularBufferShouldAddAndRemoveInQueueOrder();
+    CircularBufferShouldOverwriteOldestValuesWhenAddingToFullBuffer();
 
     printf("All Circular Buffer tests passed.\n");
     return 0;
