@@ -1,7 +1,7 @@
 # Change the name of this if the main object file isn't called "BufferDriver.o".
 obj-m += BufferDriver.o
 # Add other object files to this list, separated by spaces.
-# BufferDriver-objs := CircularBuffer.o
+BufferDriver-objs := CircularBuffer.o
 
 # Compiler variables.
 # CC = gcc
@@ -22,7 +22,7 @@ all:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
 
 clean:
-	make -C /lib/modules/$(shall uname -r)/build M=$(PWD) clean
+	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
 
 circ_buffer_test:
 	@mkdir -p $(OBJ_PATH) # Create the object directory if it doesn't currently exist.	

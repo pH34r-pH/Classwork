@@ -3,9 +3,8 @@
  */
 
 #include "CircularBuffer.h"
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
+#include <linux/bug.h>
+#include <linux/string.h>
 
 void CircularBufferClear(CircularBuffer* circBuffer)
 {
@@ -16,7 +15,7 @@ void CircularBufferClear(CircularBuffer* circBuffer)
 
 void CircularBufferAddByte(unsigned char byte, CircularBuffer* circBuffer)
 {
-	assert(circBuffer != NULL);
+	BUG_ON(circBuffer != NULL);
 
 	// Add in the new byte.
 	circBuffer->buffer[circBuffer->head] = byte;
@@ -30,10 +29,10 @@ void CircularBufferAddByte(unsigned char byte, CircularBuffer* circBuffer)
 
 unsigned char CircularBufferGetByte(CircularBuffer* circBuffer)
 {
-	assert(circBuffer != NULL);
+	BUG_ON(circBuffer != NULL);
 
 	// Must not attempt to get a byte when the buffer is empty.
-	assert(!CircularBufferIsEmpty(circBuffer));
+	BUG_ON(!CircularBufferIsEmpty(circBuffer));
 
 	// Get the byte to return.
 	unsigned char byte = circBuffer->buffer[circBuffer->tail];
@@ -53,7 +52,7 @@ unsigned char CircularBufferGetByte(CircularBuffer* circBuffer)
 
 unsigned short CircularBufferCount(CircularBuffer* circBuffer)
 {
-	assert(circBuffer != NULL);
+	BUG_ON(circBuffer != NULL);
 
 	// Return the amount of data that is available.
 	if (circBuffer->head > circBuffer->tail)
@@ -78,16 +77,16 @@ unsigned short CircularBufferCount(CircularBuffer* circBuffer)
 	return 0;
 }
 
-bool CircularBufferIsEmpty(CircularBuffer* circBuffer)
+int CircularBufferIsEmpty(CircularBuffer* circBuffer)
 {
-	assert(circBuffer != NULL);
+	BUG_ON(circBuffer != NULL);
 
 	return circBuffer->isEmpty;
 }
 
-bool CircularBufferIsFull(CircularBuffer* circBuffer)
+int CircularBufferIsFull(CircularBuffer* circBuffer)
 {
-    assert(circBuffer != NULL);
+    BUG_ON(circBuffer != NULL);
 
     // The buffer is full if isEmpty is false and the head is greater than (overflowed) or equal to (full) the tail.
     if (!circBuffer->isEmpty && circBuffer->head >= circBuffer->tail)

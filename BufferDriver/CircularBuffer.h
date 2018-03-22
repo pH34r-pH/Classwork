@@ -4,8 +4,7 @@
 
 #pragma once
 
-#include <stdint.h>
-#include <stdbool.h>
+#include <linux/stddef.h>
 
 #ifndef CIRCULAR_BUFFER_CAPACITY_BYTES
 #define CIRCULAR_BUFFER_CAPACITY_BYTES 1024
@@ -41,7 +40,7 @@ typedef struct
 	/**
 	 * Whether or not the circular buffer is currently empty.
 	 */
-	bool isEmpty;
+	int isEmpty;
 } CircularBuffer;
 
 /**
@@ -80,11 +79,11 @@ unsigned short CircularBufferCount(CircularBuffer* buffer);
  * @param buffer The CircularBuffer object to use.
  * @return True if the buffer is empty, otherwise false.
  */
-bool CircularBufferIsEmpty(CircularBuffer* buffer);
+int CircularBufferIsEmpty(CircularBuffer* buffer);
 
 /**
  * Gets whether or not the circular buffer is full.
  * @param buffer The CircularBuffer object to use.
  * @return True if the buffer is full, otherwise false.
  */
-bool CircularBufferIsFull(CircularBuffer* buffer);
+int CircularBufferIsFull(CircularBuffer* buffer);
