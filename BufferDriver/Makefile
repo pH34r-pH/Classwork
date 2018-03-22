@@ -1,12 +1,12 @@
 # Change the name of this if the main object file isn't called "BufferDriver.o".
 obj-m += BufferDriver.o
 # Add other object files to this list, separated by spaces.
-BufferDriver-objs := CircularBuffer.o
+# BufferDriver-objs := CircularBuffer.o
 
 # Compiler variables.
-CC = gcc
-CFLAGS = -std=c99 -g
-CFLAGS_LINK = -static
+# CC = gcc
+# CFLAGS = -std=c99 -g
+# CFLAGS_LINK = -static
 
 # Command line variables.
 ifdef CIRCULAR_BUFFER_CAPACITY
