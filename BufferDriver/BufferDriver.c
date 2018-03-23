@@ -31,21 +31,21 @@ static struct file_operations fops = {
 
 // initialize the module
 static int __init bd_init(void) {
-
+  printk(KERN_INFO "initializing BufferDriver\n");
   // receive a registered_number
   registered_number = register_chrdev(0, DEVICE_NAME,  &fops);
   if(registered_number < 0) {
-    printk(KERN_ALERT "failed to register device");
+    printk(KERN_ALERT "failed to register device\n");
     return registered_number;
   }
   sprintf(message, "%d", registered_number);
-  printk(KERN_INFO "Registered device with number %s", message);
+  printk(KERN_INFO "Registered device with number %s\n", message);
 
   // register the class
   character_class = class_create(THIS_MODULE, CLASS_NAME);
   if(IS_ERR(character_class)) {
     unregister_chrdev(registered_number, CLASS_NAME);
-    printk(KERN_ALERT "failed to register class to the kernel");
+    printk(KERN_ALERT "failed to register class to the kernel\n");
     return PTR_ERR(character_class);
   }
 
@@ -53,9 +53,11 @@ static int __init bd_init(void) {
   character_device = device_create(character_class, NULL, MKDEV(registered_number, 0), NULL, DEVICE_NAME);
   if(IS_ERR(character_device)) {
     unregister_chrdev(registered_number, CLASS_NAME);
-    printk(KERN_ALERT "failed to register device to the kernel");
+    printk(KERN_ALERT "failed to register device to the kernel\n");
     return PTR_ERR(character_device);
   }
+
+  printk(KERN_INFO "successful initialization\n");
   return 0;
 }
 
