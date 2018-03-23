@@ -56,7 +56,10 @@ static int __init bd_init(void) {
     printk(KERN_ALERT "failed to register device to the kernel\n");
     return PTR_ERR(character_device);
   }
-
+  
+  //Set up the circular buffer
+  CircularBufferClear(&cBuffer);
+  
   printk(KERN_INFO "successful initialization\n");
   return 0;
 }
@@ -67,46 +70,55 @@ static void __exit bd_exit(void){
    class_unregister(character_class);                        
    class_destroy(character_class);                             
    unregister_chrdev(registered_number, DEVICE_NAME);   
+   printk(KERN_INFO "successfully shut down\n");
 }
 
 // device open
 static int bd_open(struct inode *inodep, struct file *filep) {
+  printk(KERN_INFO "Device %d opened\n", registered_number);
   return 0;
 }
 
 // device read - user wants data
 static ssize_t bd_read(struct file *filep, char *buffer, size_t len, loff_t *offset) {
-
-  for(int i = 0; i < len / 32; i++)
+  int i = 0;
+  for(; i < len / 32; i++)
   {
     if(CircularBufferIsEmpty(&cBuffer)) {
-      return -EFUALT;
+      printk(KERN_INFO "Buffer has been emptied.\n");
+      break;
     }
-
-    message[i] = CircularBufferGetByte(buffer[i], &cBuffer);
+    unsigned char letter = CircularBufferGetByte(&cBuffer);
+    printk(KERN_INFO "Read %c from buffer\n", letter);
+    message[i] = letter;
   }
 
-  printk(KERN_INFO message);
-  
+  printk(KERN_INFO "%s", message);
+  return i;
 }
 
 // write to buffer
 static ssize_t bd_write(struct file *filep, const char *buffer, size_t len, loff_t *offset) {
   // read in message to buffer
-  for(int i = 0; i < sizeof(buffer); i++)
+  printk(KERN_INFO "Writing to buffer\n");
+  
+  printk(KERN_INFO "The buffer says %s and len is %d\n", buffer, len);
+  int i = 0;
+  for(; i < len; i++)
   {
     if(CircularBufferIsFull(&cBuffer)) {
-      return -EFUALT;
+      printk(KERN_INFO "Buffer has been filled, and will begin overwriting.\n");
     }
 
     CircularBufferAddByte(buffer[i], &cBuffer);
   }
 
-  return len;
+  return i;
 }
 
 // close device
 static int bd_release(struct inode *inodep, struct file *filep) {
+  printk(KERN_INFO "Device %d closed\n", registered_number);
   return 0;
 }
 

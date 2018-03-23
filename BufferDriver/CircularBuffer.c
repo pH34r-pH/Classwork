@@ -15,7 +15,7 @@ void CircularBufferClear(CircularBuffer* circBuffer)
 
 void CircularBufferAddByte(unsigned char byte, CircularBuffer* circBuffer)
 {
-	BUG_ON(circBuffer != NULL);
+	BUG_ON(circBuffer == NULL);
 
 	// Add in the new byte.
 	circBuffer->buffer[circBuffer->head] = byte;
@@ -29,10 +29,10 @@ void CircularBufferAddByte(unsigned char byte, CircularBuffer* circBuffer)
 
 unsigned char CircularBufferGetByte(CircularBuffer* circBuffer)
 {
-	BUG_ON(circBuffer != NULL);
+	BUG_ON(circBuffer == NULL);
 
 	// Must not attempt to get a byte when the buffer is empty.
-	BUG_ON(!CircularBufferIsEmpty(circBuffer));
+	BUG_ON(CircularBufferIsEmpty(circBuffer));
 
 	// Get the byte to return.
 	unsigned char byte = circBuffer->buffer[circBuffer->tail];
@@ -52,7 +52,7 @@ unsigned char CircularBufferGetByte(CircularBuffer* circBuffer)
 
 unsigned short CircularBufferCount(CircularBuffer* circBuffer)
 {
-	BUG_ON(circBuffer != NULL);
+	BUG_ON(circBuffer == NULL);
 
 	// Return the amount of data that is available.
 	if (circBuffer->head > circBuffer->tail)
@@ -79,14 +79,14 @@ unsigned short CircularBufferCount(CircularBuffer* circBuffer)
 
 int CircularBufferIsEmpty(CircularBuffer* circBuffer)
 {
-	BUG_ON(circBuffer != NULL);
+	BUG_ON(circBuffer == NULL);
 
 	return circBuffer->isEmpty;
 }
 
 int CircularBufferIsFull(CircularBuffer* circBuffer)
 {
-    BUG_ON(circBuffer != NULL);
+    BUG_ON(circBuffer == NULL);
 
     // The buffer is full if isEmpty is false and the head is greater than (overflowed) or equal to (full) the tail.
     if (!circBuffer->isEmpty && circBuffer->head >= circBuffer->tail)
