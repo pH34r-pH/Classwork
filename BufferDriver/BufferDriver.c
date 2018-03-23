@@ -4,14 +4,16 @@
 #include <linux/kernel.h> 
 #include <linux/fs.h>
 #include <linux/uaccess.h> 
+#include "CircularBuffer.h"
 #define  DEVICE_NAME "bdmodule"
 #define  CLASS_NAME  "bd"
 
 MODULE_LICENSE("GPL");
 
 static int registered_number = 0; // device number 
-static char message[1024] = {0}; // string stored from user 
+static char message[32] = {0}; // current message
 static short size_of_message; // size of current message
+static CircularBuffer cBuffer;
 static struct class* character_class = NULL; 
 static struct device* character_device = NULL;
 
@@ -36,6 +38,8 @@ static int __init bd_init(void) {
     printk(KERN_ALERT "failed to register device");
     return registered_number;
   }
+  sprintf(message, "%d", registered_number);
+  printk(KERN_INFO "Registered device with number %s", message);
 
   // register the class
   character_class = class_create(THIS_MODULE, CLASS_NAME);
@@ -70,28 +74,32 @@ static int bd_open(struct inode *inodep, struct file *filep) {
 
 // device read - user wants data
 static ssize_t bd_read(struct file *filep, char *buffer, size_t len, loff_t *offset) {
-  int error_count = 0;
 
-  // 0 indicates success
-  error_count = copy_to_user(buffer, message, len);
+  for(int i = 0; i < len / 32; i++)
+  {
+    if(CircularBufferIsEmpty(&cBuffer)) {
+      return -EFUALT;
+    }
 
-  // if successfully sent to user
-  if(error_count == 0) {
-    // will need to modify to edit new size of the message
-    return (size_of_message=0);
+    message[i] = CircularBufferGetByte(buffer[i], &cBuffer);
   }
-  // otherwise return failure
-  else {
-    return -EFAULT;
-  }
+
+  printk(KERN_INFO message);
+  
 }
 
 // write to buffer
 static ssize_t bd_write(struct file *filep, const char *buffer, size_t len, loff_t *offset) {
   // read in message to buffer
-  sprintf(message, "%s(%zu letters)", buffer, len);
-  // increment total size of message
-  size_of_message += strlen(message);
+  for(int i = 0; i < sizeof(buffer); i++)
+  {
+    if(CircularBufferIsFull(&cBuffer)) {
+      return -EFUALT;
+    }
+
+    CircularBufferAddByte(buffer[i], &cBuffer);
+  }
+
   return len;
 }
 
