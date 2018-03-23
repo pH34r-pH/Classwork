@@ -1,12 +1,15 @@
 # Change the name of this if the main object file isn't called "BufferDriver.o".
 obj-m += BufferDriver.o
 # Add other object files to this list, separated by spaces.
-BufferDriver-objs := CircularBuffer.o
+BufferDriver-objs := CircularBuffer.o BufferDriverMain.o
 
 # Compiler variables.
 # CC = gcc
 # CFLAGS = -std=c99 -g
 # CFLAGS_LINK = -static
+
+# Set CFlags such that they don't interfere with the internal Makefile declarations of the module stuff.
+ccflags-y := -std=gnu99
 
 # Command line variables.
 ifdef CIRCULAR_BUFFER_CAPACITY
