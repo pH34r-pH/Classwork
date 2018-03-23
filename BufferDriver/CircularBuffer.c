@@ -89,7 +89,7 @@ int CircularBufferIsFull(CircularBuffer* circBuffer)
     BUG_ON(circBuffer == NULL);
 
     // The buffer is full if isEmpty is false and the head is greater than (overflowed) or equal to (full) the tail.
-    if (!circBuffer->isEmpty && circBuffer->head >= circBuffer->tail)
+    if (!circBuffer->isEmpty && circBuffer->head == circBuffer->tail)
     {
         return true;
     }

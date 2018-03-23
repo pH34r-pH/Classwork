@@ -11,7 +11,7 @@
 MODULE_LICENSE("GPL");
 
 static int registered_number = 0; // device number 
-static char message[32] = {0}; // current message
+static char message[CIRCULAR_BUFFER_CAPACITY_BYTES] = {}; // current message
 static short size_of_message; // size of current message
 static CircularBuffer cBuffer;
 static struct class* character_class = NULL; 
@@ -81,33 +81,32 @@ static int bd_open(struct inode *inodep, struct file *filep) {
 
 // device read - user wants data
 static ssize_t bd_read(struct file *filep, char *buffer, size_t len, loff_t *offset) {
+  printk(KERN_INFO "Reading from device\n");
   int i = 0;
-  for(; i < len / 32; i++)
+  for(; i < len; i++)
   {
     if(CircularBufferIsEmpty(&cBuffer)) {
       printk(KERN_INFO "Buffer has been emptied.\n");
       break;
     }
-    unsigned char letter = CircularBufferGetByte(&cBuffer);
-    printk(KERN_INFO "Read %c from buffer\n", letter);
-    message[i] = letter;
+    message[i] = CircularBufferGetByte(&cBuffer);
   }
 
-  printk(KERN_INFO "%s", message);
+  printk(KERN_INFO "message sent to user: %s", message);
+  copy_to_user(buffer, message, len);
   return i;
 }
 
 // write to buffer
 static ssize_t bd_write(struct file *filep, const char *buffer, size_t len, loff_t *offset) {
   // read in message to buffer
-  printk(KERN_INFO "Writing to buffer\n");
-  
-  printk(KERN_INFO "The buffer says %s and len is %d\n", buffer, len);
+  printk(KERN_INFO "Writing to device\n");
   int i = 0;
   for(; i < len; i++)
   {
     if(CircularBufferIsFull(&cBuffer)) {
-      printk(KERN_INFO "Buffer has been filled, and will begin overwriting.\n");
+      printk(KERN_INFO "Buffer has been filled, and can no longer be written to.\n");
+      break;
     }
 
     CircularBufferAddByte(buffer[i], &cBuffer);
