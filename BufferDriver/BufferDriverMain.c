@@ -88,13 +88,23 @@ static ssize_t bd_read(struct file *filep, char *buffer, size_t len, loff_t *off
   {
     if(CircularBufferIsEmpty(&cBuffer)) {
       printk(KERN_INFO "Buffer has been emptied.\n");
+
+      // no message is being sent to the user
+      if(i == 0) {
+        return i;
+      }
       break;
     }
     message[i] = CircularBufferGetByte(&cBuffer);
   }
 
+  // terminate string where the message stopped
+  if(i < 1024) {
+    message[i] = '\0';
+  }
+
   printk(KERN_INFO "message sent to user: %s", message);
-  copy_to_user(buffer, message, len);
+  copy_to_user(buffer, message, i);
   return i;
 }
 
