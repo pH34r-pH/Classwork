@@ -12,7 +12,6 @@ MODULE_LICENSE("GPL");
 
 static int registered_number = 0; // device number 
 static char message[CIRCULAR_BUFFER_CAPACITY_BYTES] = {}; // current message
-static short size_of_message; // size of current message
 static CircularBuffer cBuffer;
 static struct class* character_class = NULL; 
 static struct device* character_device = NULL;
@@ -81,8 +80,10 @@ static int bd_open(struct inode *inodep, struct file *filep) {
 
 // device read - user wants data
 static ssize_t bd_read(struct file *filep, char *buffer, size_t len, loff_t *offset) {
-  printk(KERN_INFO "Reading from device\n");
   int i = 0;
+  
+  printk(KERN_INFO "Reading from device\n");
+  
   for(; i < len; i++)
   {
     if(CircularBufferIsEmpty(&cBuffer)) {
@@ -99,9 +100,11 @@ static ssize_t bd_read(struct file *filep, char *buffer, size_t len, loff_t *off
 
 // write to buffer
 static ssize_t bd_write(struct file *filep, const char *buffer, size_t len, loff_t *offset) {
+  int i = 0;
+  
   // read in message to buffer
   printk(KERN_INFO "Writing to device\n");
-  int i = 0;
+
   for(; i < len; i++)
   {
     if(CircularBufferIsFull(&cBuffer)) {

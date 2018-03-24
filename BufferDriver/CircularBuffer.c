@@ -29,13 +29,15 @@ void CircularBufferAddByte(unsigned char byte, CircularBuffer* circBuffer)
 
 unsigned char CircularBufferGetByte(CircularBuffer* circBuffer)
 {
+	unsigned char byte;
+
 	BUG_ON(circBuffer == NULL);
 
 	// Must not attempt to get a byte when the buffer is empty.
 	BUG_ON(CircularBufferIsEmpty(circBuffer));
 
 	// Get the byte to return.
-	unsigned char byte = circBuffer->buffer[circBuffer->tail];
+	byte = circBuffer->buffer[circBuffer->tail];
 
 	// Move the tail forward, wrapping around if necessary.
 	circBuffer->tail = (circBuffer->tail + 1) % CIRCULAR_BUFFER_CAPACITY_BYTES;
