@@ -125,7 +125,7 @@ static ssize_t bd_write(struct file *filep, const char *buffer, size_t len, loff
     CircularBufferAddByte(buffer[i], &cBuffer);
   }
 
-  return i;
+  return len;
 }
 
 // close device
