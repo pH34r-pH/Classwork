@@ -15,6 +15,8 @@
 #endif
 #endif
 
+#define CIRCULAR_BUFFER_POINTER_BYTES 8
+
 /**
  * @brief Represents a Circular Buffer of a fixed size.
  *
@@ -26,17 +28,17 @@
 typedef struct
 {
 	/**
-	 * The head of the circular buffer.
+	 * The place in memory where the head pointer is.
 	 */
-	unsigned short head;
+	unsigned short memHeadPointer = CIRCULAR_BUFFER_CAPACITY_BYTES;
 	/**
-	 * The tail of the circular buffer.
+	 * The place in memory where the tail pointer is.
 	 */
-	unsigned short tail;
+	unsigned short memTailPointer = CIRCULAR_BUFFER_CAPACITY_BYTES + sizeof(headPointer);
 	/**
-	 * The circular buffer itself.
+	 * The buffer consisting of the circular buffer and the head and tail pointers.
 	 */
-	unsigned char buffer[CIRCULAR_BUFFER_CAPACITY_BYTES];
+	unsigned char savedMemory[CIRCULAR_BUFFER_CAPACITY_BYTES + CIRCULAR_BUFFER_POINTER_BYTES];
 	/**
 	 * Whether or not the circular buffer is currently empty.
 	 */
@@ -48,6 +50,18 @@ typedef struct
  * @param buffer The CircularBuffer object to initialize.
  */
 void CircularBufferClear(CircularBuffer* buffer);
+
+/**
+ * Exports the circularbuffer to memory
+ * @param buffer The CircularBuffer object to initialize.
+ */
+void CircularBufferExportMemory(CircularBuffer* buffer);
+
+/**
+ * Sets the circular buffer to an already existing circular buffer
+ * @param buffer The CircularBuffer object to initialize.
+ */
+void CircularBufferSetMemory(CircularBuffer* buffer);
 
 /**
  * Adds a single byte to the specified circular buffer. Note that if the buffer is full when this
