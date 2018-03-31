@@ -6,11 +6,26 @@
 #include <linux/bug.h>
 #include <linux/string.h>
 
+unsigned short headPointer(CircularBuffer* circBuffer)
+{
+	return circBuffer->savedMemory[circBuffer->memHeadPointer];
+}
+
+unsigned short tailPointer(CircularBuffer* circBuffer)
+{
+	return circBuffer->savedMemory[circBuffer->memTailPointer];
+}
+
 void CircularBufferClear(CircularBuffer* circBuffer)
 {
-	circBuffer->head = circBuffer->tail = 0;
+	circBuffer->savedMemory[circBuffer->memHeadPointer] = circBuffer->savedMemory[circBuffer->memTailPointer] = 0;
 	circBuffer->isEmpty = true;
-    memset(circBuffer->buffer, 0, CIRCULAR_BUFFER_CAPACITY_BYTES);
+    memset(circBuffer->savedMemory, 0, CIRCULAR_BUFFER_CAPACITY_BYTES + CIRCULAR_BUFFER_POINTER_BYTES);
+}
+
+void CircularBufferClear(CircularBuffer* circBuffer)
+{
+	EXPORT_SYMBOL(circBuffer->savedMemory);
 }
 
 void CircularBufferAddByte(unsigned char byte, CircularBuffer* circBuffer)
@@ -18,10 +33,10 @@ void CircularBufferAddByte(unsigned char byte, CircularBuffer* circBuffer)
 	BUG_ON(circBuffer == NULL);
 
 	// Add in the new byte.
-	circBuffer->buffer[circBuffer->head] = byte;
+	circBuffer->savedMemory[headPointer(circBuffer)] = byte;
 
 	// Move the head forward, wrapping to the front if necessary.
-	circBuffer->head = (circBuffer->head + 1) % CIRCULAR_BUFFER_CAPACITY_BYTES;
+	circBuffer->savedMemory[circBuffer->memHeadPointer] = (headPointer(circBuffer) + 1) % CIRCULAR_BUFFER_CAPACITY_BYTES;
 
     // By adding a byte, we're definitely no longer empty.
     circBuffer->isEmpty = false;
@@ -37,13 +52,13 @@ unsigned char CircularBufferGetByte(CircularBuffer* circBuffer)
 	BUG_ON(CircularBufferIsEmpty(circBuffer));
 
 	// Get the byte to return.
-	byte = circBuffer->buffer[circBuffer->tail];
+	byte = circBuffer->savedMemory[tailPointer(circBuffer)];
 
 	// Move the tail forward, wrapping around if necessary.
-	circBuffer->tail = (circBuffer->tail + 1) % CIRCULAR_BUFFER_CAPACITY_BYTES;
+	circBuffer->savedMemory[tailPointer(circBuffer)] = (tailPointer(circBuffer) + 1) % CIRCULAR_BUFFER_CAPACITY_BYTES;
 
 	// The buffer is empty if head equals tail and isEmpty is false.
-    if (circBuffer->tail == circBuffer->head && !circBuffer->isEmpty)
+    if (headPointer(circBuffer) == tailPointer(circBuffer) && !circBuffer->isEmpty)
     {
         circBuffer->isEmpty = true;
     }
@@ -57,16 +72,16 @@ unsigned short CircularBufferCount(CircularBuffer* circBuffer)
 	BUG_ON(circBuffer == NULL);
 
 	// Return the amount of data that is available.
-	if (circBuffer->head > circBuffer->tail)
+	if (headPointer(circBuffer) > tailPointer(circBuffer))
 	{
 		// If head > tail, we return head - tail so we get the amount of data between the two variables.
-		return circBuffer->head - circBuffer->tail;
+		return headPointer(circBuffer) - tailPointer(circBuffer);
 	}
-	else if (circBuffer->tail > circBuffer->head)
+	else if (tailPointer(circBuffer) > headPointer(circBuffer))
 	{
 		// If tail > head, the data has wrapped around the array. We want the data after tail to the end of the array, and
 		// then the data from the beginning of the array to head.
-		return CIRCULAR_BUFFER_CAPACITY_BYTES - circBuffer->tail + circBuffer->head;
+		return CIRCULAR_BUFFER_CAPACITY_BYTES - tailPointer(circBuffer) + headPointer(circBuffer);
 	}
 	else
 	{
@@ -91,7 +106,7 @@ int CircularBufferIsFull(CircularBuffer* circBuffer)
     BUG_ON(circBuffer == NULL);
 
     // The buffer is full if isEmpty is false and the head is greater than (overflowed) or equal to (full) the tail.
-    if (!circBuffer->isEmpty && circBuffer->head == circBuffer->tail)
+    if (!circBuffer->isEmpty && headPointer(circBuffer) == tailPointer(circBuffer))
     {
         return true;
     }
