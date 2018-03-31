@@ -52,10 +52,16 @@ typedef struct
 void CircularBufferClear(CircularBuffer* buffer);
 
 /**
- * Makes this circular buffer a writer, exporting memory for other buffers to read
+ * Exports the circularbuffer to memory
  * @param buffer The CircularBuffer object to initialize.
  */
 void CircularBufferExportMemory(CircularBuffer* buffer);
+
+/**
+ * Sets the circular buffer to an already existing circular buffer
+ * @param buffer The CircularBuffer object to initialize.
+ */
+void CircularBufferSetMemory(CircularBuffer* buffer);
 
 /**
  * Adds a single byte to the specified circular buffer. Note that if the buffer is full when this

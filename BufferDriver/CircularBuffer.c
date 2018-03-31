@@ -23,9 +23,15 @@ void CircularBufferClear(CircularBuffer* circBuffer)
     memset(circBuffer->savedMemory, 0, CIRCULAR_BUFFER_CAPACITY_BYTES + CIRCULAR_BUFFER_POINTER_BYTES);
 }
 
-void CircularBufferClear(CircularBuffer* circBuffer)
+void CircularBufferExportMemory(CircularBuffer* circBuffer)
 {
-	EXPORT_SYMBOL(circBuffer->savedMemory);
+	EXPORT_SYMBOL(circBuffer);
+}
+
+void CircularBufferSetMemory(CircularBuffer* currentCircBuffer)
+{
+	extern char * circBuffer;
+	currentCircBuffer = circBuffer;
 }
 
 void CircularBufferAddByte(unsigned char byte, CircularBuffer* circBuffer)
