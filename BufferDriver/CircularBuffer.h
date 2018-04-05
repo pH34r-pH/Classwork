@@ -44,6 +44,23 @@ typedef struct
 } CircularBuffer;
 
 /**
+ * Represents a position in the CircularBuffer from which to read from when trying to read multiple
+ * bytes in a contiguous order.
+ */
+typedef struct
+{
+	/**
+	 * A pointer into the CircularBuffer to start reading data from.
+	 */
+	unsigned char* bufferPointer;
+
+	/**
+	 * The length of the data that should be read from this position in the buffer.
+	 */
+	unsigned short length;
+} CircularBufferPointer;
+
+/**
  * Clears the circular buffer, emptying it of contents. This doubles as initialization.
  * @param buffer The CircularBuffer object to initialize.
  */
@@ -66,6 +83,16 @@ void CircularBufferAddByte(unsigned char byte, CircularBuffer* buffer);
  * @return The next available byte in the circular buffer.
  */
 unsigned char CircularBufferGetByte(CircularBuffer* buffer);
+
+/**
+ * Gets one or two pointers into the circular buffer that allows client code to read the data in a contiguous
+ * manner without copying it into another buffer.
+ * @param size The number of bytes to read out of the CircularBuffer.
+ * @param pointers An array of two CircularBufferPointer objects, which will contain the data needed to read from
+ *                 the CircularBuffer in a contiguous manner.
+ * @param buffer The CircularBuffer object to use.
+ */
+void CircularBufferGetBytes(unsigned short size, CircularBufferPointer pointers[2], CircularBuffer* buffer);
 
 /**
  * Gets the amount of data that is currently in the buffer.

@@ -52,6 +52,54 @@ unsigned char CircularBufferGetByte(CircularBuffer* circBuffer)
 	return byte;
 }
 
+void CircularBufferGetBytes(unsigned short size, CircularBufferPointer pointers[2], CircularBuffer* circBuffer)
+{
+	BUG_ON(circBuffer == NULL);
+
+	// If the specified size is 0, set both pointer reference objects to 0.
+	if (size == 0)
+	{
+		memset(pointers, 0, sizeof(CircularBufferPointer) * 2);
+		return;
+	}	
+
+	// The amount of data requested must be less than or equal to the amount of data available.
+	BUG_ON(size > CircularBufferCount(circBuffer));
+
+	// In order to get the amount of data requested, will wrapping be necessary?
+	if (circBuffer->tail + size > CIRCULAR_BUFFER_CAPACITY_BYTES)
+	{
+		// We will need to perform a wrap. The first pointer will represent all data to the end of the array.
+		pointers[0].bufferPointer = circBuffer->buffer + circBuffer->tail;
+		pointers[0].length = circBuffer->tail + size - CIRCULAR_BUFFER_CAPACITY_BYTES;
+
+		// The second pointer is the remainder of the "contiguous" data, starting from the beginning of the buffer.
+		pointers[1].length = ((circBuffer->tail + size) % CIRCULAR_BUFFER_CAPACITY_BYTES) - 1;
+		pointers[1].bufferPointer = circBuffer->buffer;
+		
+		circBuffer->tail = pointers[1].length;
+	}
+	else
+	{
+		// A wrap around is not necessary. The second pointer should have its size set to 0.
+		pointers[1].bufferPointer = NULL;
+		pointers[1].length = 0;
+
+		// The first pointer should have the appropriate information set.
+		pointers[0].bufferPointer = circBuffer->buffer + circBuffer->tail + size;
+		pointers[0].length = size;
+
+		// Move the tail forward.
+		circBuffer->tail += size;
+	}
+
+	// The buffer is empty if head equals tail and isEmpty is false.
+    if (circBuffer->tail == circBuffer->head && !circBuffer->isEmpty)
+    {
+        circBuffer->isEmpty = true;
+    }
+}
+
 unsigned short CircularBufferCount(CircularBuffer* circBuffer)
 {
 	BUG_ON(circBuffer == NULL);
