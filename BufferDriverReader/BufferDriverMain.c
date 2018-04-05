@@ -1,5 +1,5 @@
-#include <linux/module.h>
-#include <linux/init.h>        
+#include <linux/init.h>          
+#include <linux/module.h>        
 #include <linux/device.h>
 #include <linux/kernel.h> 
 #include <linux/fs.h>
@@ -12,23 +12,23 @@ MODULE_LICENSE("GPL");
 
 static int registered_number = 0; // device number 
 static char message[CIRCULAR_BUFFER_CAPACITY_BYTES] = {}; // current message
-static CircularBuffer cBuffer;
+extern CircularBuffer cBuffer;
 static struct class* character_class = NULL; 
 static struct device* character_device = NULL;
 
 static int bd_open(struct inode *, struct file *);
-static ssize_t bd_write(struct file *, const char *, size_t, loff_t *);
+static ssize_t bd_read(struct file *, char *, size_t, loff_t *);
 static int bd_release(struct inode *, struct file *);
 
 static struct file_operations fops = {
   .open = bd_open,
-  .write = bd_write,
+  .read = bd_read,
   .release = bd_release,
 };
 
 // initialize the module
 static int __init bd_init(void) {
-  printk(KERN_INFO "initializing BufferDriver\n");
+  printk(KERN_INFO "initializing BufferDriverReader\n");
   // receive a registered_number
   registered_number = register_chrdev(0, DEVICE_NAME,  &fops);
   if(registered_number < 0) {
@@ -54,9 +54,6 @@ static int __init bd_init(void) {
     return PTR_ERR(character_device);
   }
   
-  //Set up the circular buffer
-  CircularBufferClear(&cBuffer);
-  
   printk(KERN_INFO "successful initialization\n");
   return 0;
 }
@@ -76,24 +73,34 @@ static int bd_open(struct inode *inodep, struct file *filep) {
   return 0;
 }
 
-// write to buffer
-static ssize_t bd_write(struct file *filep, const char *buffer, size_t len, loff_t *offset) {
+// device read - user wants data
+static ssize_t bd_read(struct file *filep, char *buffer, size_t len, loff_t *offset) {
   int i = 0;
   
-  // read in message to buffer
-  printk(KERN_INFO "Writing to device\n");
-
+  printk(KERN_INFO "Reading from device\n");
+  
   for(; i < len; i++)
   {
-    if(CircularBufferIsFull(&cBuffer)) {
-      printk(KERN_INFO "Buffer has been filled, and can no longer be written to.\n");
+    if(CircularBufferIsEmpty(&cBuffer)) {
+      printk(KERN_INFO "Buffer has been emptied.\n");
+
+      // no message is being sent to the user
+      if(i == 0) {
+        return i;
+      }
       break;
     }
-
-    CircularBufferAddByte(buffer[i], &cBuffer);
+    message[i] = CircularBufferGetByte(&cBuffer);
   }
 
-  return len;
+  // terminate string where the message stopped
+  if(i < 1024) {
+    message[i] = '\0';
+  }
+
+  printk(KERN_INFO "message sent to user: %s", message);
+  copy_to_user(buffer, message, i);
+  return i;
 }
 
 // close device
@@ -102,6 +109,5 @@ static int bd_release(struct inode *inodep, struct file *filep) {
   return 0;
 }
 
-EXPORT_SYMBOL(cBuffer);
 module_init(bd_init);
 module_exit(bd_exit);
