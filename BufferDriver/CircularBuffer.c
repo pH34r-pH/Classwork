@@ -8,6 +8,12 @@
 
 void CircularBufferClear(CircularBuffer* circBuffer)
 {
+	BUG_ON(circBuffer == NULL);
+
+	// Initialize the mutex. Note that this should be called ONLY by whichever driver "owns" the
+	// CircularBuffer.
+	mutex_init(&circBuffer->bufferMutex);
+
 	circBuffer->head = circBuffer->tail = 0;
 	circBuffer->isEmpty = true;
     memset(circBuffer->buffer, 0, CIRCULAR_BUFFER_CAPACITY_BYTES);
@@ -17,6 +23,9 @@ void CircularBufferAddByte(unsigned char byte, CircularBuffer* circBuffer)
 {
 	BUG_ON(circBuffer == NULL);
 
+	// Lock the mutex before modifying buffer variables.
+	mutex_lock(&circBuffer->bufferMutex);
+
 	// Add in the new byte.
 	circBuffer->buffer[circBuffer->head] = byte;
 
@@ -25,6 +34,9 @@ void CircularBufferAddByte(unsigned char byte, CircularBuffer* circBuffer)
 
     // By adding a byte, we're definitely no longer empty.
     circBuffer->isEmpty = false;
+
+	// Unlock the mutex since we're done modifying buffer variables.
+	mutex_unlock(&circBuffer->bufferMutex);
 }
 
 unsigned char CircularBufferGetByte(CircularBuffer* circBuffer)
@@ -35,6 +47,9 @@ unsigned char CircularBufferGetByte(CircularBuffer* circBuffer)
 
 	// Must not attempt to get a byte when the buffer is empty.
 	BUG_ON(CircularBufferIsEmpty(circBuffer));
+
+	// Lock the mutex before modifying buffer variables.
+	mutex_lock(&circBuffer->bufferMutex);
 
 	// Get the byte to return.
 	byte = circBuffer->buffer[circBuffer->tail];
@@ -47,6 +62,9 @@ unsigned char CircularBufferGetByte(CircularBuffer* circBuffer)
     {
         circBuffer->isEmpty = true;
     }
+
+	// Unlock the mutex since we're done modifying buffer variables.
+	mutex_unlock(&circBuffer->bufferMutex);
 
 	// Return the retrieved byte.
 	return byte;
@@ -65,6 +83,9 @@ void CircularBufferGetBytes(unsigned short size, CircularBufferPointer pointers[
 
 	// The amount of data requested must be less than or equal to the amount of data available.
 	BUG_ON(size > CircularBufferCount(circBuffer));
+
+	// Lock the mutex before modifying buffer variables.
+	mutex_lock(&circBuffer->bufferMutex);
 
 	// In order to get the amount of data requested, will wrapping be necessary?
 	if (circBuffer->tail + size > CIRCULAR_BUFFER_CAPACITY_BYTES)
@@ -98,6 +119,9 @@ void CircularBufferGetBytes(unsigned short size, CircularBufferPointer pointers[
     {
         circBuffer->isEmpty = true;
     }
+
+	// Unlock the mutex since we're done modifying buffer variables.
+	mutex_unlock(&circBuffer->bufferMutex);
 }
 
 unsigned short CircularBufferCount(CircularBuffer* circBuffer)

@@ -5,8 +5,8 @@
 #include <linux/fs.h>
 #include <linux/uaccess.h> 
 #include "CircularBuffer.h"
-#define  DEVICE_NAME "bdmodule"
-#define  CLASS_NAME  "bd"
+#define  DEVICE_NAME "bdreader"
+#define  CLASS_NAME  "bdread"
 
 MODULE_LICENSE("GPL");
 

@@ -5,8 +5,8 @@
 #include <linux/fs.h>
 #include <linux/uaccess.h> 
 #include "CircularBuffer.h"
-#define  DEVICE_NAME "bdmodule"
-#define  CLASS_NAME  "bd"
+#define  DEVICE_NAME "bdwriter"
+#define  CLASS_NAME  "bdwrite"
 
 MODULE_LICENSE("GPL");
 
@@ -25,6 +25,8 @@ static struct file_operations fops = {
   .write = bd_write,
   .release = bd_release,
 };
+
+EXPORT_SYMBOL(cBuffer);
 
 // initialize the module
 static int __init bd_init(void) {
@@ -102,6 +104,5 @@ static int bd_release(struct inode *inodep, struct file *filep) {
   return 0;
 }
 
-EXPORT_SYMBOL(cBuffer);
 module_init(bd_init);
 module_exit(bd_exit);

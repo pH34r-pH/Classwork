@@ -5,6 +5,7 @@
 #pragma once
 
 #include <linux/stddef.h>
+#include <linux/mutex.h>
 
 #ifndef CIRCULAR_BUFFER_CAPACITY_BYTES
 #define CIRCULAR_BUFFER_CAPACITY_BYTES 1024
@@ -41,6 +42,10 @@ typedef struct
 	 * Whether or not the circular buffer is currently empty.
 	 */
 	int isEmpty;
+	/**
+	 * The mutex that is used to make the CircularBuffer instance multithread and multiprocess safe.
+	 */
+	struct mutex bufferMutex;
 } CircularBuffer;
 
 /**
