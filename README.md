@@ -10,10 +10,13 @@
    * Run `make clean` to delete all intermediate and binary files generated from running make.
    * Run `make PRINT_PROCESSES_DATA=true` from the root folder or the `Scheduler` folder to make the Scheduler print the data it   reads   in before executing the rest of main.
 
-  ### Running the code
+  ### Running Scheduler
    Make sure that `processes.in` is inside the `Output` folder.
    
    `cd` into the `Output` folder and run `./Scheduler processes.in`.  The output will be generated in the same folder as `processes.out`.
+
+  ### Running BufferDriver
+   run `sudo insmod BufferDriverWrite.ko` and `sudo insmod BufferDriverReader.ko` to get the drivers into the kernel.  Run `dmesg` to read the messages.
 
   ### Using CLib Extensions
    There are a few additional data structures that can be used for this project (e.g. stacks and vectors).  See their header files in the `CLibExtensions` folder for how to utilize them.
