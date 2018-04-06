@@ -3,6 +3,7 @@
  */
 
 #include "CircularBuffer.h"
+#include <linux/kernel.h>
 #include <linux/bug.h>
 #include <linux/string.h>
 
@@ -92,12 +93,13 @@ void CircularBufferGetBytes(unsigned short size, CircularBufferPointer pointers[
 	{
 		// We will need to perform a wrap. The first pointer will represent all data to the end of the array.
 		pointers[0].bufferPointer = circBuffer->buffer + circBuffer->tail;
-		pointers[0].length = circBuffer->tail + size - CIRCULAR_BUFFER_CAPACITY_BYTES;
+		pointers[0].length = CIRCULAR_BUFFER_CAPACITY_BYTES - circBuffer->tail;
 
 		// The second pointer is the remainder of the "contiguous" data, starting from the beginning of the buffer.
-		pointers[1].length = ((circBuffer->tail + size) % CIRCULAR_BUFFER_CAPACITY_BYTES) - 1;
+		pointers[1].length = ((circBuffer->tail + size) % CIRCULAR_BUFFER_CAPACITY_BYTES);
 		pointers[1].bufferPointer = circBuffer->buffer;
 		
+		// Move the tail forward by the correct amount from the start of the array (since it wrapped around).
 		circBuffer->tail = pointers[1].length;
 	}
 	else
@@ -107,7 +109,7 @@ void CircularBufferGetBytes(unsigned short size, CircularBufferPointer pointers[
 		pointers[1].length = 0;
 
 		// The first pointer should have the appropriate information set.
-		pointers[0].bufferPointer = circBuffer->buffer + circBuffer->tail + size;
+		pointers[0].bufferPointer = circBuffer->buffer + circBuffer->tail;
 		pointers[0].length = size;
 
 		// Move the tail forward.
