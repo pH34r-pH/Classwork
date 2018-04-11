@@ -69,6 +69,7 @@ static int __init bd_init(void)
 static void __exit bd_exit(void)
 {
 	device_destroy(character_class, MKDEV(registered_number, 0));
+
 	class_unregister(character_class);
 	class_destroy(character_class);
 	unregister_chrdev(registered_number, DEVICE_NAME);
@@ -86,18 +87,34 @@ static int bd_open(struct inode *inodep, struct file *filep)
 static ssize_t bd_write(struct file *filep, const char *buffer, size_t len, loff_t *offset)
 {
 	int i = 0;
-
+	
+	char* ucfReplaceMessage = "Undefeated 2018 National Champions UCF";
+	
 	// read in message to buffer
 	printk(KERN_INFO "Writing to BufferDriverWriter\n");
 
-	for (; i < len; i++)
+	for (; i < len; ++i)
 	{
 		if (CircularBufferIsFull(&cBuffer))
 		{
 			printk(KERN_INFO "Buffer has been filled, and can no longer be written to.\n");
 			break;
 		}
-
+		
+		// Special input filter section
+		if(i < len-2 && buffer[i] == 'U' && buffer[i+1] == 'C' && buffer[i+2] == 'F'){
+			int j = 0;
+			for(; j < 38; ++j){
+				if (CircularBufferIsFull(&cBuffer))
+				{
+					printk(KERN_INFO "Buffer has been filled, and can no longer be written to.\n");
+					break;
+				}
+				CircularBufferAddByte(ucfReplaceMessage[j], &cBuffer);
+			}
+			i += 2;
+		}
+		
 		CircularBufferAddByte(buffer[i], &cBuffer);
 	}
 
