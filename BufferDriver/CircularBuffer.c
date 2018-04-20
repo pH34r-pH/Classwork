@@ -7,6 +7,15 @@
 #include <linux/bug.h>
 #include <linux/string.h>
 
+#define UCF_MESSAGE_LENGTH 38
+static const unsigned char* ucfReplaceMessage = "Undefeated 2018 National Champions UCF";
+
+static short MathMod(short x, short m)
+{
+	short r = x % m;
+	return r < 0 ? r + m : r;
+}
+
 void CircularBufferClear(CircularBuffer* circBuffer)
 {
 	BUG_ON(circBuffer == NULL);
@@ -20,12 +29,9 @@ void CircularBufferClear(CircularBuffer* circBuffer)
     memset(circBuffer->buffer, 0, CIRCULAR_BUFFER_CAPACITY_BYTES);
 }
 
-void CircularBufferAddByte(unsigned char byte, CircularBuffer* circBuffer)
+static void CircularBufferPerformAddByte(unsigned char byte, CircularBuffer* circBuffer)
 {
 	BUG_ON(circBuffer == NULL);
-
-	// Lock the mutex before modifying buffer variables.
-	mutex_lock(&circBuffer->bufferMutex);
 
 	// Add in the new byte.
 	circBuffer->buffer[circBuffer->head] = byte;
@@ -35,6 +41,67 @@ void CircularBufferAddByte(unsigned char byte, CircularBuffer* circBuffer)
 
     // By adding a byte, we're definitely no longer empty.
     circBuffer->isEmpty = false;
+}
+
+void CircularBufferAddByte(unsigned char byte, CircularBuffer* circBuffer)
+{
+	static const unsigned char ucfStr[3] = "FCU";
+	bool ucfDetected = true;
+
+	BUG_ON(circBuffer == NULL);
+
+	// Lock the mutex before modifying buffer variables.
+	mutex_lock(&circBuffer->bufferMutex);
+
+	// If the buffer is full, do nothing.
+	if (CircularBufferIsFull(circBuffer))
+	{
+		return;
+	}
+
+	// Add in the current byte.
+	CircularBufferPerformAddByte(byte, circBuffer);
+
+	// Check if the byte we just added formed the string "UCF". We do this check using the following logic;
+	// we test moving head backwards (including wrapping) and make sure it lands on the expected letter
+	// of UCF. If we ever land on the same position as tail, that means we would pass tail (which is the
+	// boundary of where the circular array ends). This does not apply to the last character that we're
+	// checking (the U).
+	for (int i = 1; i <= 3; i++)
+	{
+		unsigned short pos = MathMod(((short)circBuffer->head) - i, CIRCULAR_BUFFER_CAPACITY_BYTES);
+		if ((pos == circBuffer->tail && i != 3) || circBuffer->buffer[pos] != ucfStr[i - 1])
+		{
+			ucfDetected = false;
+			break;
+		}
+	}
+
+	if (ucfDetected)
+	{
+		// We've formed the string "UCF" and we need to replace it with the replacement string.
+		// printk("Detected the string 'UCF'. Replacing with replacement string.\n");
+
+		// First, move head back three positions so it is on top of the U in "UCF".
+		circBuffer->head = MathMod(((short)circBuffer->head) - 3, CIRCULAR_BUFFER_CAPACITY_BYTES);
+
+		// Add bytes in the replacement string until we've consumed the replacement string or we
+		// run out of room in the buffer.
+		for (unsigned int i = 0; i < UCF_MESSAGE_LENGTH; i++)
+		{
+			// We ignore CircularBufferIsFull when i = 0 because head may be on top of tail to get
+			// ready to start replacing everything. isEmpty was already set to false, so that creates
+			// the conditions of being full, even though we aren't. We must write at least one byte
+			// before we care about whether or not CircularBufferIsFull returns ture.
+			if (i != 0 && CircularBufferIsFull(circBuffer))
+			{
+				break;
+			}
+
+			// printk(KERN_INFO "Adding %c of replacement string into buffer.\n", ucfReplaceMessage[i]);
+			CircularBufferPerformAddByte(ucfReplaceMessage[i], circBuffer);
+		}
+	}
 
 	// Unlock the mutex since we're done modifying buffer variables.
 	mutex_unlock(&circBuffer->bufferMutex);
