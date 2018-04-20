@@ -1,12 +1,20 @@
-# Change the name of this if the main object file isn't called "BufferDriver.o".
-obj-m += BufferDriver.o
 # Add other object files to this list, separated by spaces.
-BufferDriver-objs := CircularBuffer.o
+ifdef compile_write_driver
+	obj-m += BufferDriverWriter.o
+	BufferDriverWriter-objs := CircularBuffer.o BufferDriverWriterMain.o
+endif
+ifdef compile_read_driver
+	obj-m += BufferDriverReader.o
+	BufferDriverReader-objs := CircularBuffer.o BufferDriverReaderMain.o
+endif
 
 # Compiler variables.
-CC = gcc
-CFLAGS = -std=c99 -g
-CFLAGS_LINK = -static
+# CC = gcc
+# CFLAGS = -std=c99 -g
+# CFLAGS_LINK = -static
+
+# Set CFlags such that they don't interfere with the internal Makefile declarations of the module stuff.
+ccflags-y := -std=gnu99
 
 # Command line variables.
 ifdef CIRCULAR_BUFFER_CAPACITY
@@ -19,10 +27,17 @@ OBJ_PATH = obj/
 BIN_PATH = bin/
 
 all:
+ifeq ($(compile_write_driver), TRUE)
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+else ifeq ($(compile_read_driver), TRUE)
+	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+else	
+	make compile_write_driver=TRUE
+	make compile_read_driver=TRUE
+endif
 
 clean:
-	make -C /lib/modules/$(shall uname -r)/build M=$(PWD) clean
+	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
 
 circ_buffer_test:
 	@mkdir -p $(OBJ_PATH) # Create the object directory if it doesn't currently exist.	
